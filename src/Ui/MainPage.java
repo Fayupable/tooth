@@ -24,6 +24,10 @@ public class MainPage extends javax.swing.JFrame {
         mp_btn_charge = new javax.swing.JButton();
         mp_txtf_username = new javax.swing.JTextField();
 
+
+
+        String userName = mp_txtf_username.getText();
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -93,10 +97,19 @@ public class MainPage extends javax.swing.JFrame {
 
     private void mp_btn_itemActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+
+        ItemPage itemPage = new ItemPage();
+        itemPage.setVisible(true);
+        this.dispose();
+
     }
 
     private void mp_btn_chargeActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        ItemPage itemPage = new ItemPage();
+        itemPage.setVisible(true);
+        this.dispose();
+
     }
 
     /**

@@ -1,8 +1,8 @@
-package Ui;/*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
+package Ui;
 /**
  *
  * @author pc
@@ -56,6 +56,9 @@ public class ItemPage extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         ip_table_charge = new javax.swing.JTable();
+        jPanel5 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        ip_item_table_statictic = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -293,13 +296,6 @@ public class ItemPage extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(ip_item_table);
-        if (ip_item_table.getColumnModel().getColumnCount() > 0) {
-            ip_item_table.getColumnModel().getColumn(4).setHeaderValue("battery");
-            ip_item_table.getColumnModel().getColumn(5).setHeaderValue("use time");
-            ip_item_table.getColumnModel().getColumn(6).setHeaderValue("use date");
-            ip_item_table.getColumnModel().getColumn(7).setHeaderValue("use day part");
-            ip_item_table.getColumnModel().getColumn(8).setHeaderValue("use id");
-        }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -314,7 +310,7 @@ public class ItemPage extends javax.swing.JFrame {
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 30, Short.MAX_VALUE))
+                                .addGap(0, 60, Short.MAX_VALUE))
         );
 
         ip_tp_panel.addTab("Item", jPanel1);
@@ -338,6 +334,11 @@ public class ItemPage extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        ip_table_charge.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ip_table_chargeMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(ip_table_charge);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -353,10 +354,54 @@ public class ItemPage extends javax.swing.JFrame {
                 jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 30, Short.MAX_VALUE))
+                                .addGap(0, 60, Short.MAX_VALUE))
         );
 
         ip_tp_panel.addTab("Charge", jPanel4);
+
+        ip_item_table_statictic.setModel(new javax.swing.table.DefaultTableModel(
+                new Object [][] {
+                        {null, null, null, null, null, null, null, null, null},
+                        {null, null, null, null, null, null, null, null, null},
+                        {null, null, null, null, null, null, null, null, null},
+                        {null, null, null, null, null, null, null, null, null}
+                },
+                new String [] {
+                        "id", "name", "item id", "item name", "battery", "use time", "use date", "use day part", "use id"
+                }
+        ) {
+            Class[] types = new Class [] {
+                    java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        ip_item_table_statictic.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ip_item_table_staticticMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(ip_item_table_statictic);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+                jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
+                                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+                jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 60, Short.MAX_VALUE))
+        );
+
+        ip_tp_panel.addTab("Statistic", jPanel5);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -438,6 +483,14 @@ public class ItemPage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }
 
+    private void ip_table_chargeMouseClicked(java.awt.event.MouseEvent evt) {
+        // TODO add your handling code here:
+    }
+
+    private void ip_item_table_staticticMouseClicked(java.awt.event.MouseEvent evt) {
+        // TODO add your handling code here:
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -475,14 +528,17 @@ public class ItemPage extends javax.swing.JFrame {
     private javax.swing.JButton ip_btn_delete1;
     private javax.swing.JButton ip_btn_update;
     private javax.swing.JTable ip_item_table;
+    private javax.swing.JTable ip_item_table_statictic;
     private javax.swing.JTable ip_table_charge;
     private javax.swing.JTabbedPane ip_tp_panel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lbl_battery;
     private javax.swing.JLabel lbl_id;
     private javax.swing.JLabel lbl_item_id;
