@@ -1,6 +1,7 @@
 package Item;
 
 import Db.Enum.EDbVarDayPart;
+import Db.Enum.EDbVarItemName;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,6 +12,15 @@ public class Use extends Common{
     private LocalDate item_use_date;    //use
     private EDbVarDayPart item_use_day_part;   //use
     private int item_use_id;    //use
+
+    public Use(String item_user_name, int item_user_id, int item_id, EDbVarItemName item_name, int item_battery, LocalTime item_use_time, LocalDate item_use_date, EDbVarDayPart item_use_day_part, int item_use_id) {
+        super(item_user_name, item_user_id, item_id, item_name);
+        this.item_battery = item_battery;
+        this.item_use_time = item_use_time;
+        this.item_use_date = item_use_date;
+        this.item_use_day_part = item_use_day_part;
+        this.item_use_id = item_use_id;
+    }
 
     public int getItem_battery() {
         return item_battery;

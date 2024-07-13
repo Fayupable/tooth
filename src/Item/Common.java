@@ -9,6 +9,16 @@ public class Common {
     private int item_id;        //use,charge
     private EDbVarItemName item_name;   //use,charge
 
+    public Common(String item_user_name, int item_user_id, int item_id, EDbVarItemName item_name) {
+        this.item_user_name = item_user_name;
+        this.item_user_id = item_user_id;
+        this.item_id = item_id;
+        this.item_name = item_name;
+    }
+
+    public Common() {
+    }
+
     public String getItem_user_name() {
         return item_user_name;
     }
