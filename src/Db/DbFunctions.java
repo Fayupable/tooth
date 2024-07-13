@@ -234,5 +234,26 @@ public class DbFunctions implements IDbFunctions {
 
         return List.of();
     }
+    public List<Common> searchFunctionCharge(String search) throws DbConnectionException {
+        List<Common> commonList = new ArrayList<Common>();
+        Connection conn = DbConnector.getConnection();
+        PreparedStatement psmt = null;
+        ResultSet rs = null;
+        try {
+            psmt = conn.prepareStatement("SELECT * FROM charge_time WHERE item_user_name LIKE '%" + search + "%'");
+            rs = psmt.executeQuery();
+            while (rs.next()) {
+                Common item = new Charge(rs.getString("item_user_name"), rs.getInt("item_user_id"), rs.getInt("item_id"), EDbVarItemName.getById(rs.getInt("item_name")), LocalTime.parse(rs.getString("item_charge_time")), LocalDate.parse(rs.getString("item_charge_date")));
+                commonList.add(item);
+            }
+            psmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new DbConnectionException("Failed to search item: " + e.getMessage(), e);
+        }
+
+        return List.of();
+    }
+
 
 }

@@ -42,11 +42,8 @@ public class Test {
 
 //        MainPage mainPage = new MainPage();
 //        mainPage.setVisible(true);
-        ItemPage itemPage = new ItemPage();
-        itemPage.setVisible(true);
-
-        StatisticPage statisticPage = new StatisticPage();
-        statisticPage.setVisible(true);
+        MainPage mainPage = new MainPage();
+        mainPage.setVisible(true);
 
 
     }
