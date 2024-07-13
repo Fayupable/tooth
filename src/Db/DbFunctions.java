@@ -255,5 +255,4 @@ public class DbFunctions implements IDbFunctions {
         return List.of();
     }
 
-
 }
