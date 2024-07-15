@@ -1,18 +1,9 @@
 package Test;
 
-import Db.DbConnector;
-import Db.DbFunctions;
-import Db.Enum.EDbVarDayPart;
-import Db.Enum.EDbVarItemName;
 import Db.Exception.DbConnectionException;
-import Item.Charge;
-import Item.Use;
-import Ui.ItemPage;
 import Ui.MainPage;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class Test {
     public static void main(String[] args) throws DbConnectionException, SQLException {

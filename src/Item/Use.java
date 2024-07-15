@@ -1,64 +1,83 @@
 package Item;
 
-import Db.Enum.EDbVarDayPart;
-import Db.Enum.EDbVarItemName;
+import User.User;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.Objects;
 
-public class Use extends Common{
-    private int item_battery;   //use
-    private LocalTime item_use_time;    //use
-    private LocalDate item_use_date;    //use
-    private EDbVarDayPart item_use_day_part;   //use
-    private int item_use_id;    //use
+public class Use extends Item {
+    private User user;
+    private LocalDate use_date;
+    private int use_time;
+    private int battery;
+    private int use_id;
 
-    public Use(String item_user_name, int item_user_id, int item_id, EDbVarItemName item_name, int item_battery, LocalTime item_use_time, LocalDate item_use_date, EDbVarDayPart item_use_day_part, int item_use_id) {
-        super(item_user_name, item_user_id, item_id, item_name);
-        this.item_battery = item_battery;
-        this.item_use_time = item_use_time;
-        this.item_use_date = item_use_date;
-        this.item_use_day_part = item_use_day_part;
-        this.item_use_id = item_use_id;
+
+    public Use() {
     }
 
-    public int getItem_battery() {
-        return item_battery;
+    public User getUser() {
+        return user;
     }
 
-    public void setItem_battery(int item_battery) {
-        this.item_battery = item_battery;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public LocalTime getItem_use_time() {
-        return item_use_time;
+    public LocalDate getUse_date() {
+        return use_date;
     }
 
-    public void setItem_use_time(LocalTime item_use_time) {
-        this.item_use_time = item_use_time;
+    public void setUse_date(LocalDate use_date) {
+        this.use_date = use_date;
     }
 
-    public LocalDate getItem_use_date() {
-        return item_use_date;
+    public int getUse_time() {
+        return use_time;
     }
 
-    public void setItem_use_date(LocalDate item_use_date) {
-        this.item_use_date = item_use_date;
+    public void setUse_time(int use_time) {
+        this.use_time = use_time;
     }
 
-    public EDbVarDayPart getItem_use_day_part() {
-        return item_use_day_part;
+    public int getBattery() {
+        return battery;
     }
 
-    public void setItem_use_day_part(EDbVarDayPart item_use_day_part) {
-        this.item_use_day_part = item_use_day_part;
+    public void setBattery(int battery) {
+        this.battery = battery;
     }
 
-    public int getItem_use_id() {
-        return item_use_id;
+    public int getUse_id() {
+        return use_id;
     }
 
-    public void setItem_use_id(int item_use_id) {
-        this.item_use_id = item_use_id;
+    public void setUse_id(int use_id) {
+        this.use_id = use_id;
+    }
+
+    @Override
+    public String toString() {
+        return "Use{" +
+                "user=" + user +
+                ", use_date=" + use_date +
+                ", use_time=" + use_time +
+                ", battery=" + battery +
+                ", use_id=" + use_id +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Use use = (Use) o;
+        return use_time == use.use_time && battery == use.battery && use_id == use.use_id && Objects.equals(user, use.user) && Objects.equals(use_date, use.use_date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), user, use_date, use_time, battery, use_id);
     }
 }

@@ -1,35 +1,72 @@
 package Item;
 
-import Db.Enum.EDbVarItemName;
+import User.User;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.Objects;
 
-public class Charge extends Common{
+public class Charge extends Item{
+    private User user;
+    private LocalDate charge_date;
+    private int charge_time;
+    private int charge_id;
 
-    private LocalTime item_charge_time; //charge
-    private LocalDate item_charge_date; //charge
-
-    public Charge(String item_user_name, int item_user_id, int item_id, EDbVarItemName item_name, LocalTime item_charge_time, LocalDate item_charge_dete) {
-        super(item_user_name, item_user_id, item_id, item_name);
-        this.item_charge_time = item_charge_time;
-        this.item_charge_date = item_charge_dete;
-
+    public Charge() {
     }
 
-    public LocalTime getItem_charge_time() {
-        return item_charge_time;
+    public User getUser() {
+        return user;
     }
 
-    public void setItem_charge_time(LocalTime item_charge_time) {
-        this.item_charge_time = item_charge_time;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public LocalDate getItem_charge_date() {
-        return item_charge_date;
+    public LocalDate getCharge_date() {
+        return charge_date;
     }
 
-    public void setItem_charge_date(LocalDate item_charge_dete) {
-        this.item_charge_date = item_charge_dete;
+    public void setCharge_date(LocalDate charge_date) {
+        this.charge_date = charge_date;
+    }
+
+    public int getCharge_time() {
+        return charge_time;
+    }
+
+    public void setCharge_time(int charge_time) {
+        this.charge_time = charge_time;
+    }
+
+    public int getCharge_id() {
+        return charge_id;
+    }
+
+    public void setCharge_id(int charge_id) {
+        this.charge_id = charge_id;
+    }
+
+    @Override
+    public String toString() {
+        return "Charge{" +
+                "user=" + user +
+                ", charge_date=" + charge_date +
+                ", charge_time=" + charge_time +
+                ", charge_id=" + charge_id +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Charge charge = (Charge) o;
+        return charge_time == charge.charge_time && charge_id == charge.charge_id && Objects.equals(user, charge.user) && Objects.equals(charge_date, charge.charge_date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), user, charge_date, charge_time, charge_id);
     }
 }

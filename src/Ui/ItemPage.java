@@ -284,7 +284,7 @@ public class ItemPage extends javax.swing.JFrame {
                         {null, null, null, null, null, null, null, null, null}
                 },
                 new String [] {
-                        "id", "name", "item id", "item name", "battery", "use time", "use date", "use day part", "use id"
+
                 }
         ) {
             Class[] types = new Class [] {
@@ -323,7 +323,7 @@ public class ItemPage extends javax.swing.JFrame {
                         {null, null, null, null, null, null, null}
                 },
                 new String [] {
-                        "id", "name", "item id", "item name", "item charge date", "item charge time", "item charge id"
+
                 }
         ) {
             Class[] types = new Class [] {
@@ -367,7 +367,7 @@ public class ItemPage extends javax.swing.JFrame {
                         {null, null, null, null, null, null, null, null, null}
                 },
                 new String [] {
-                        "id", "name", "item id", "item name", "battery", "use time", "use date", "use day part", "use id"
+
                 }
         ) {
             Class[] types = new Class [] {

@@ -1,5 +1,10 @@
 package Ui;
 
+import Db.DbFunctions;
+import Db.Exception.DbConnectionException;
+
+import javax.swing.*;
+
 public class MainPage extends javax.swing.JFrame {
 
     /**
@@ -25,7 +30,6 @@ public class MainPage extends javax.swing.JFrame {
         mp_txtf_username = new javax.swing.JTextField();
 
 
-
         String userName = mp_txtf_username.getText();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -44,14 +48,22 @@ public class MainPage extends javax.swing.JFrame {
         mp_btn_item.setText("Item");
         mp_btn_item.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mp_btn_itemActionPerformed(evt);
+                try {
+                    mp_btn_itemActionPerformed(evt);
+                } catch (DbConnectionException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
         mp_btn_charge.setText("Charge");
         mp_btn_charge.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mp_btn_chargeActionPerformed(evt);
+                try {
+                    mp_btn_chargeActionPerformed(evt);
+                } catch (DbConnectionException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -95,21 +107,30 @@ public class MainPage extends javax.swing.JFrame {
         pack();
     }// </editor-fold>
 
-    private void mp_btn_itemActionPerformed(java.awt.event.ActionEvent evt) {
+    private void mp_btn_itemActionPerformed(java.awt.event.ActionEvent evt) throws DbConnectionException {
         // TODO add your handling code here:
-
-        ItemPage itemPage = new ItemPage();
-        itemPage.setVisible(true);
-        this.dispose();
-
+//        String userName = mp_txtf_username.getText();
+//        Common common = DbFunctions.Login(userName);
+//        if (mp_txtf_username.getText().isEmpty()) {
+//            JOptionPane.showMessageDialog(mp_txtf_username, "Please enter a username");
+//        } else if (common != null) {
+//            ItemPage itemPage = new ItemPage();
+//            itemPage.setVisible(true);
+//            this.dispose();
+//        }
     }
 
-    private void mp_btn_chargeActionPerformed(java.awt.event.ActionEvent evt) {
+    private void mp_btn_chargeActionPerformed(java.awt.event.ActionEvent evt) throws DbConnectionException {
         // TODO add your handling code here:
-        ItemPage itemPage = new ItemPage();
-        itemPage.setVisible(true);
-        this.dispose();
-
+//        String userName = mp_txtf_username.getText();
+//        Common common = DbFunctions.Login(userName);
+//        if (mp_txtf_username.getText().isEmpty()) {
+//            JOptionPane.showMessageDialog(mp_txtf_username, "Please enter a username");
+//        } else if (common != null) {
+//            ItemPage itemPage = new ItemPage();
+//            itemPage.setVisible(true);
+//            this.dispose();
+//        }
     }
 
     /**
