@@ -1,12 +1,14 @@
 package Db;
 
 import Db.Exception.DbConnectionException;
+import Item.Enum.ItemType;
 import Item.Item;
 import User.User;
 import Item.Charge;
 import Item.Use;
 
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DbFunctions implements IDbFunctions {
@@ -24,6 +26,7 @@ public class DbFunctions implements IDbFunctions {
 //    private static final String delete_item_use = "DELETE FROM use_time WHERE item_use_id = ?";
 //    private static final String delete_item_charge = "DELETE FROM charge_time WHERE item_charge_id = ?";
 //    private static final String test = "INSERT INTO use_time (item_user_id) VALUES (?)"; // for testing
+    private static final String insert_item = "INSERT INTO Item(item_id, item_name, item_type) VALUES (?,?,?)";
 
 
     // date regex ^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$
@@ -35,35 +38,151 @@ public class DbFunctions implements IDbFunctions {
     public DbFunctions() {
 
     }
+    /*
+     Connection conn = getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("INSERT customer (adi,soyadi) VALUES ('" + contract.getName() + "','" + contract.getSurname() + "')");
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+     */
 
     @Override
     public void InsertItem(Item item) throws DbConnectionException, SQLException {
-
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DbConnector.getConnection();
+            stmt = conn.prepareStatement(insert_item);
+            stmt.setInt(1, item.getId());
+            stmt.setString(2, item.getName());
+            stmt.setString(3, String.valueOf(item.getType()));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
     }
 
     @Override
     public void UpdateItem(Item item) throws DbConnectionException, SQLException {
+        Connection conn = DbConnector.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("UPDATE Item SET item_name = '" + item.getName() + "', item_type = '" + item.getType() + "' WHERE item_id = " + item.getId());
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
     public void DeleteItem(Item item) throws DbConnectionException, SQLException {
-
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DbConnector.getConnection();
+            String sql = "DELETE FROM Item WHERE item_id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, item.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error executing DeleteItem: " + e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing statement: " + e.getMessage());
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                }
+            }
+        }
     }
 
-    @Override
     public List<Item> GetAllItems() throws DbConnectionException, SQLException {
-        return List.of();
+        List<Item> items = new ArrayList<>();
+        Connection conn = DbConnector.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Item");
+            while (rs.next()) {
+                Item item = new Item();
+                item.setId(rs.getInt("item_id"));
+                item.setName(rs.getString("item_name"));
+                item.setType(ItemType.valueOf(rs.getString("item_type")));
+                items.add(item);
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return items;
     }
 
     @Override
     public List<Item> SearchItem(String search) throws DbConnectionException, SQLException {
-        return List.of();
+        List<Item> items = new ArrayList<>();
+        Connection conn = DbConnector.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Item WHERE item_name LIKE '%" + search + "%'");
+            while (rs.next()) {
+                Item item = new Item();
+                item.setId(rs.getInt("item_id"));
+                item.setName(rs.getString("item_name"));
+                item.setType(ItemType.valueOf(rs.getString("item_type")));
+                items.add(item);
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return items;
+
     }
 
     @Override
     public Item GetItemById(int id) throws DbConnectionException, SQLException {
-        return null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Item item = null;
+        try {
+            conn = DbConnector.getConnection();
+            String sql = "SELECT * FROM Item WHERE item_id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                item = new Item();
+                item.setId(rs.getInt("item_id"));
+                item.setName(rs.getString("item_name"));
+                item.setType(ItemType.valueOf(rs.getString("item_type")));
+            }
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
+        return item;
     }
 
     @Override
@@ -168,7 +287,6 @@ public class DbFunctions implements IDbFunctions {
         }
     }
      */
-
 
 
 }

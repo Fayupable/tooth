@@ -12,6 +12,16 @@ public class Item {
     public Item() {
     }
 
+    public Item(String s, ItemType itemType) {
+        this.name = s;
+        this.type = itemType;
+    }
+    public Item(int id, String name, ItemType type) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+    }
+
     public int getId() {
         return id;
     }

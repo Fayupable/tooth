@@ -1,9 +1,15 @@
 package Test;
 
+import Db.DbConnector;
+import Db.DbFunctions;
 import Db.Exception.DbConnectionException;
+import Item.Enum.ItemType;
 import Ui.MainPage;
+import Item.Item;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Test {
     public static void main(String[] args) throws DbConnectionException, SQLException {
@@ -32,9 +38,13 @@ public class Test {
 
 //        MainPage mainPage = new MainPage();
 //        mainPage.setVisible(true);
-        MainPage mainPage = new MainPage();
-        mainPage.setVisible(true);
+//        MainPage mainPage = new MainPage();
+//        mainPage.setVisible(true);
+        DbFunctions dbFunctions = new DbFunctions();
 
+        for (Item item : dbFunctions.GetAllItems()) {
+            System.out.println(item);
+        }
 
     }
 }

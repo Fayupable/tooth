@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 
 public class DbConnector {
-    private static final String URL = "jdbc:mysql://localhost:3306/brusher?useSSL=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/tooth?useSSL=false&serverTimezone=UTC";
     private static final String USER="root";
     private static final String PASSWORD="12345678";
     private static Connection conn;
@@ -16,16 +16,14 @@ public class DbConnector {
 
 
     public static Connection getConnection() throws DbConnectionException {
-        if (conn == null) {
-            try {
-                conn = DriverManager.getConnection(URL, USER, PASSWORD);
-                Logger.getLogger(DbConnector.class.getName()).info("Connection established");
-            } catch (SQLException e) {
-                System.out.println("Connection failed: " + e.getMessage());
-                throw new DbConnectionException("Failed to establish database connection.");
-            }
+        try {
+            Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            Logger.getLogger(DbConnector.class.getName()).info("Connection established");
+            return conn;
+        } catch (SQLException e) {
+            Logger.getLogger(DbConnector.class.getName()).severe("Connection failed: " + e.getMessage());
+            throw new DbConnectionException("Failed to establish database connection.", e);
         }
-        return conn;
     }
 
     public static Connection closeConnection() throws DbConnectionException {
