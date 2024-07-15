@@ -335,6 +335,27 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public void insertUse(Use use) throws DbConnectionException, SQLException {
+        Connection conn = DbConnector.getConnection();
+        User user = use.getUser();
+        Item item = use.getItem();
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("INSERT INTO `Use` (use_id, user_id, item_id, use_date, use_time, battery) VALUES (?, ?, ?, ?, ?, ?)");
+            stmt.setInt(1, use.getId());
+            stmt.setInt(2, user.getId());
+            stmt.setInt(3, item.getId());
+            stmt.setDate(4, Date.valueOf(use.getUse_date()));
+            stmt.setTime(5, use.getUse_time());
+            stmt.setInt(6, use.getBattery());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+
+        }
+
 
     }
 

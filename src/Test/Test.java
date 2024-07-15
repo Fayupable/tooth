@@ -7,8 +7,11 @@ import Item.Enum.ItemType;
 import Ui.MainPage;
 import Item.Item;
 import User.User;
+import Item.Charge;
+import Item.Use;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +50,13 @@ public class Test {
 //            System.out.println(item);
 //        }
 
+        User user = new User("John", "Doe");
+
+        Item item = new Item("Oral-B Toothbrush", ItemType.TOOTHBRUSHER);
+        Use use = new Use(user, item, LocalDate.now(), 10, 80);
 
 
+        dbFunctions.insertUse(use);
 
 
     }
