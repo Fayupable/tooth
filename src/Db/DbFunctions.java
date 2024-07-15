@@ -51,7 +51,7 @@ public class DbFunctions implements IDbFunctions {
      */
 
     @Override
-    public void InsertItem(Item item) throws DbConnectionException, SQLException {
+    public void insertItem(Item item) throws DbConnectionException, SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -70,7 +70,7 @@ public class DbFunctions implements IDbFunctions {
     }
 
     @Override
-    public void UpdateItem(Item item) throws DbConnectionException, SQLException {
+    public void updateItem(Item item) throws DbConnectionException, SQLException {
         Connection conn = DbConnector.getConnection();
         try {
             Statement stmt = conn.createStatement();
@@ -84,7 +84,7 @@ public class DbFunctions implements IDbFunctions {
     }
 
     @Override
-    public void DeleteItem(Item item) throws DbConnectionException, SQLException {
+    public void deleteItem(Item item) throws DbConnectionException, SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -113,7 +113,7 @@ public class DbFunctions implements IDbFunctions {
         }
     }
 
-    public List<Item> GetAllItems() throws DbConnectionException, SQLException {
+    public List<Item> getAllItems() throws DbConnectionException, SQLException {
         List<Item> items = new ArrayList<>();
         Connection conn = DbConnector.getConnection();
         try {
@@ -135,7 +135,7 @@ public class DbFunctions implements IDbFunctions {
     }
 
     @Override
-    public List<Item> SearchItem(String search) throws DbConnectionException, SQLException {
+    public List<Item> searchItem(String search) throws DbConnectionException, SQLException {
         List<Item> items = new ArrayList<>();
         Connection conn = DbConnector.getConnection();
         try {
@@ -158,7 +158,7 @@ public class DbFunctions implements IDbFunctions {
     }
 
     @Override
-    public Item GetItemById(int id) throws DbConnectionException, SQLException {
+    public Item getItemById(int id) throws DbConnectionException, SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -186,92 +186,180 @@ public class DbFunctions implements IDbFunctions {
     }
 
     @Override
-    public void InsertUser(User user) throws DbConnectionException, SQLException {
+    public void insertUser(User user) throws DbConnectionException, SQLException {
+        Connection conn = DbConnector.getConnection();
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            stmt.executeUpdate("INSERT INTO User (user_id, user_name, user_surname) VALUES ('" + user.getId() + "','" + user.getName() + "','" + user.getSurname() + "')");
+            stmt.close();            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
-    public void UpdateUser(User user) throws DbConnectionException, SQLException {
+    public void updateUser(User user) throws DbConnectionException, SQLException {
+        Connection conn = DbConnector.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = (PreparedStatement) conn.createStatement();
+            stmt.executeUpdate("UPDATE User SET user_name = '" + user.getName() + "', user_surname = " + user.getSurname());
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
-    public void DeleteUser(User user) throws DbConnectionException, SQLException {
+    public void deleteUser(User user) throws DbConnectionException, SQLException {
+        Connection conn = DbConnector.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = (PreparedStatement) conn.createStatement();
+            stmt.executeUpdate("DELETE FROM User WHERE user_id = " + user.getId());
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
-    public List<User> GetAllUsers() throws DbConnectionException, SQLException {
+    public List<User> getAllUsers() throws DbConnectionException, SQLException {
+        List<User> users = new ArrayList<>();
+        Connection conn = DbConnector.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM User");
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("user_id"));
+                user.setName(rs.getString("user_name"));
+                user.setSurname(rs.getString("user_surname"));
+                users.add(user);
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return users;
+    }
+
+    @Override
+    public List<User> searchUser(String search) throws DbConnectionException, SQLException {
+        List<User> users = new ArrayList<>();
+        Connection conn = DbConnector.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM User WHERE user_name LIKE '%" + search + "%'");
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("user_id"));
+                user.setName(rs.getString("user_name"));
+                user.setSurname(rs.getString("user_surname"));
+                users.add(user);
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return users;
+
+    }
+
+    @Override
+    public User getUserById(int id) throws DbConnectionException, SQLException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        User user = null;
+        try {
+            conn = DbConnector.getConnection();
+            String sql = "SELECT * FROM User WHERE user_id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("user_id"));
+                user.setName(rs.getString("user_name"));
+                user.setSurname(rs.getString("user_surname"));
+            }
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
+        return user;
+    }
+
+    @Override
+    public void insertCharge(Charge charge) throws DbConnectionException, SQLException {
+
+    }
+
+    @Override
+    public void updateCharge(Charge charge) throws DbConnectionException, SQLException {
+
+    }
+
+    @Override
+    public void deleteCharge(Charge charge) throws DbConnectionException, SQLException {
+
+    }
+
+    @Override
+    public List<Charge> getAllCharges() throws DbConnectionException, SQLException {
         return List.of();
     }
 
     @Override
-    public List<User> SearchUser(String search) throws DbConnectionException, SQLException {
+    public List<Charge> searchCharge(String search) throws DbConnectionException, SQLException {
         return List.of();
     }
 
     @Override
-    public User GetUserById(int id) throws DbConnectionException, SQLException {
+    public Charge getChargeById(int id) throws DbConnectionException, SQLException {
         return null;
     }
 
     @Override
-    public void InsertCharge(Charge charge) throws DbConnectionException, SQLException {
+    public void insertUse(Use use) throws DbConnectionException, SQLException {
 
     }
 
     @Override
-    public void UpdateCharge(Charge charge) throws DbConnectionException, SQLException {
+    public void updateUse(Use use) throws DbConnectionException, SQLException {
 
     }
 
     @Override
-    public void DeleteCharge(Charge charge) throws DbConnectionException, SQLException {
+    public void deleteUse(Use use) throws DbConnectionException, SQLException {
 
     }
 
     @Override
-    public List<Charge> GetAllCharges() throws DbConnectionException, SQLException {
+    public List<Use> getAllUses() throws DbConnectionException, SQLException {
         return List.of();
     }
 
     @Override
-    public List<Charge> SearchCharge(String search) throws DbConnectionException, SQLException {
+    public List<Use> searchUse(String search) throws DbConnectionException, SQLException {
         return List.of();
     }
 
     @Override
-    public Charge GetChargeById(int id) throws DbConnectionException, SQLException {
-        return null;
-    }
-
-    @Override
-    public void InsertUse(Use use) throws DbConnectionException, SQLException {
-
-    }
-
-    @Override
-    public void UpdateUse(Use use) throws DbConnectionException, SQLException {
-
-    }
-
-    @Override
-    public void DeleteUse(Use use) throws DbConnectionException, SQLException {
-
-    }
-
-    @Override
-    public List<Use> GetAllUses() throws DbConnectionException, SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<Use> SearchUse(String search) throws DbConnectionException, SQLException {
-        return List.of();
-    }
-
-    @Override
-    public Use GetUseById(int id) throws DbConnectionException, SQLException {
+    public Use getUseById(int id) throws DbConnectionException, SQLException {
         return null;
     }
     /*

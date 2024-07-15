@@ -6,6 +6,7 @@ import Db.Exception.DbConnectionException;
 import Item.Enum.ItemType;
 import Ui.MainPage;
 import Item.Item;
+import User.User;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -42,9 +43,13 @@ public class Test {
 //        mainPage.setVisible(true);
         DbFunctions dbFunctions = new DbFunctions();
 
-        for (Item item : dbFunctions.GetAllItems()) {
-            System.out.println(item);
-        }
+//        for (Item item : dbFunctions.GetAllItems()) {
+//            System.out.println(item);
+//        }
+
+
+
+
 
     }
 }
