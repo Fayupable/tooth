@@ -26,7 +26,7 @@ public class DbFunctions implements IDbFunctions {
 //    private static final String delete_item_use = "DELETE FROM use_time WHERE item_use_id = ?";
 //    private static final String delete_item_charge = "DELETE FROM charge_time WHERE item_charge_id = ?";
 //    private static final String test = "INSERT INTO use_time (item_user_id) VALUES (?)"; // for testing
-    private static final String insert_item = "INSERT INTO Item(item_id, item_name, item_type) VALUES (?,?,?)";
+    private static final String insert_item = "INSERT INTO Item(item_name, item_type) VALUES (?,?)";
 
 
     // date regex ^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$
@@ -50,257 +50,206 @@ public class DbFunctions implements IDbFunctions {
         }
      */
 
+//    @Override
+//    public void insertItem(Item item) throws DbConnectionException, SQLException {
+//        Connection conn = null;
+//        PreparedStatement stmt = null;
+//        try {
+//            conn = DbConnector.getConnection();
+//            stmt = conn.prepareStatement(insert_item);
+//            stmt.setInt(1, item.getId());
+//            stmt.setString(2, item.getName());
+//            stmt.setString(3, String.valueOf(item.getType()));
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            throw e;
+//        } finally {
+//            if (stmt != null) stmt.close();
+//            if (conn != null) conn.close();
+//        }
+//    }
+//
+//    @Override
+//    public void updateItem(Item item) throws DbConnectionException, SQLException {
+//        Connection conn = DbConnector.getConnection();
+//        try {
+//            Statement stmt = conn.createStatement();
+//            stmt.executeUpdate("UPDATE Item SET item_name = '" + item.getName() + "', item_type = '" + item.getType() + "' WHERE item_id = " + item.getId());
+//            stmt.close();
+//            conn.close();
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
+//
+//    @Override
+//    public void deleteItem(Item item) throws DbConnectionException, SQLException {
+//        Connection conn = null;
+//        PreparedStatement stmt = null;
+//        try {
+//            conn = DbConnector.getConnection();
+//            String sql = "DELETE FROM Item WHERE item_id = ?";
+//            stmt = conn.prepareStatement(sql);
+//            stmt.setInt(1, item.getId());
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            throw new RuntimeException("Error executing DeleteItem: " + e.getMessage(), e);
+//        } finally {
+//            if (stmt != null) {
+//                try {
+//                    stmt.close();
+//                } catch (SQLException e) {
+//                    System.err.println("Error closing statement: " + e.getMessage());
+//                }
+//            }
+//            if (conn != null) {
+//                try {
+//                    conn.close();
+//                } catch (SQLException e) {
+//                    System.err.println("Error closing connection: " + e.getMessage());
+//                }
+//            }
+//        }
+//    }
+//
+//    public List<Item> getAllItems() throws DbConnectionException, SQLException {
+//        List<Item> items = new ArrayList<>();
+//        Connection conn = DbConnector.getConnection();
+//        try {
+//            Statement stmt = conn.createStatement();
+//            ResultSet rs = stmt.executeQuery("SELECT * FROM Item");
+//            while (rs.next()) {
+//                Item item = new Item();
+//                item.setId(rs.getInt("item_id"));
+//                item.setName(rs.getString("item_name"));
+//                item.setType(ItemType.valueOf(rs.getString("item_type")));
+//                items.add(item);
+//            }
+//            stmt.close();
+//            conn.close();
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return items;
+//    }
+//
+//    @Override
+//    public List<Item> searchItem(String search) throws DbConnectionException, SQLException {
+//        List<Item> items = new ArrayList<>();
+//        Connection conn = DbConnector.getConnection();
+//        try {
+//            Statement stmt = conn.createStatement();
+//            ResultSet rs = stmt.executeQuery("SELECT * FROM Item WHERE item_name LIKE '%" + search + "%'");
+//            while (rs.next()) {
+//                Item item = new Item();
+//                item.setId(rs.getInt("item_id"));
+//                item.setName(rs.getString("item_name"));
+//                item.setType(ItemType.valueOf(rs.getString("item_type")));
+//                items.add(item);
+//            }
+//            stmt.close();
+//            conn.close();
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return items;
+//
+//    }
+//
+//    @Override
+//    public Item getItemById(int id) throws DbConnectionException, SQLException {
+//        Connection conn = null;
+//        PreparedStatement stmt = null;
+//        ResultSet rs = null;
+//        Item item = null;
+//        try {
+//            conn = DbConnector.getConnection();
+//            String sql = "SELECT * FROM Item WHERE item_id = ?";
+//            stmt = conn.prepareStatement(sql);
+//            stmt.setInt(1, id);
+//            rs = stmt.executeQuery();
+//            if (rs.next()) {
+//                item = new Item();
+//                item.setId(rs.getInt("item_id"));
+//                item.setName(rs.getString("item_name"));
+//                item.setType(ItemType.valueOf(rs.getString("item_type")));
+//            }
+//        } catch (SQLException e) {
+//            throw e;
+//        } finally {
+//            if (rs != null) rs.close();
+//            if (stmt != null) stmt.close();
+//            if (conn != null) conn.close();
+//        }
+//        return item;
+//    }
+
+
     @Override
     public void insertItem(Item item) throws DbConnectionException, SQLException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DbConnector.getConnection();
-            stmt = conn.prepareStatement(insert_item);
-            stmt.setInt(1, item.getId());
-            stmt.setString(2, item.getName());
-            stmt.setString(3, String.valueOf(item.getType()));
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
-        }
+        Connection conn = DbConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(insert_item);
+        stmt.setString(1, item.getName());
+        stmt.setString(2, String.valueOf(item.getType()));
+        stmt.executeUpdate();
+        stmt.close();
+        conn.close();
     }
 
     @Override
     public void updateItem(Item item) throws DbConnectionException, SQLException {
-        Connection conn = DbConnector.getConnection();
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("UPDATE Item SET item_name = '" + item.getName() + "', item_type = '" + item.getType() + "' WHERE item_id = " + item.getId());
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
     @Override
     public void deleteItem(Item item) throws DbConnectionException, SQLException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DbConnector.getConnection();
-            String sql = "DELETE FROM Item WHERE item_id = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, item.getId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error executing DeleteItem: " + e.getMessage(), e);
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    System.err.println("Error closing statement: " + e.getMessage());
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    System.err.println("Error closing connection: " + e.getMessage());
-                }
-            }
-        }
+
     }
 
+    @Override
     public List<Item> getAllItems() throws DbConnectionException, SQLException {
-        List<Item> items = new ArrayList<>();
-        Connection conn = DbConnector.getConnection();
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Item");
-            while (rs.next()) {
-                Item item = new Item();
-                item.setId(rs.getInt("item_id"));
-                item.setName(rs.getString("item_name"));
-                item.setType(ItemType.valueOf(rs.getString("item_type")));
-                items.add(item);
-            }
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return items;
+        return List.of();
     }
 
     @Override
     public List<Item> searchItem(String search) throws DbConnectionException, SQLException {
-        List<Item> items = new ArrayList<>();
-        Connection conn = DbConnector.getConnection();
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Item WHERE item_name LIKE '%" + search + "%'");
-            while (rs.next()) {
-                Item item = new Item();
-                item.setId(rs.getInt("item_id"));
-                item.setName(rs.getString("item_name"));
-                item.setType(ItemType.valueOf(rs.getString("item_type")));
-                items.add(item);
-            }
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return items;
-
+        return List.of();
     }
 
     @Override
     public Item getItemById(int id) throws DbConnectionException, SQLException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Item item = null;
-        try {
-            conn = DbConnector.getConnection();
-            String sql = "SELECT * FROM Item WHERE item_id = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, id);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                item = new Item();
-                item.setId(rs.getInt("item_id"));
-                item.setName(rs.getString("item_name"));
-                item.setType(ItemType.valueOf(rs.getString("item_type")));
-            }
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
-        }
-        return item;
+        return null;
     }
 
     @Override
     public void insertUser(User user) throws DbConnectionException, SQLException {
-        Connection conn = DbConnector.getConnection();
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO User (user_id, user_name, user_surname) VALUES ('" + user.getId() + "','" + user.getName() + "','" + user.getSurname() + "')");
-            stmt.close();            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
     @Override
     public void updateUser(User user) throws DbConnectionException, SQLException {
-        Connection conn = DbConnector.getConnection();
-        PreparedStatement stmt = null;
-        try {
-            stmt = (PreparedStatement) conn.createStatement();
-            stmt.executeUpdate("UPDATE User SET user_name = '" + user.getName() + "', user_surname = " + user.getSurname());
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
     @Override
     public void deleteUser(User user) throws DbConnectionException, SQLException {
-        Connection conn = DbConnector.getConnection();
-        PreparedStatement stmt = null;
-        try {
-            stmt = (PreparedStatement) conn.createStatement();
-            stmt.executeUpdate("DELETE FROM User WHERE user_id = " + user.getId());
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
     @Override
     public List<User> getAllUsers() throws DbConnectionException, SQLException {
-        List<User> users = new ArrayList<>();
-        Connection conn = DbConnector.getConnection();
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM User");
-            while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("user_id"));
-                user.setName(rs.getString("user_name"));
-                user.setSurname(rs.getString("user_surname"));
-                users.add(user);
-            }
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return users;
+        return List.of();
     }
 
     @Override
     public List<User> searchUser(String search) throws DbConnectionException, SQLException {
-        List<User> users = new ArrayList<>();
-        Connection conn = DbConnector.getConnection();
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM User WHERE user_name LIKE '%" + search + "%'");
-            while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("user_id"));
-                user.setName(rs.getString("user_name"));
-                user.setSurname(rs.getString("user_surname"));
-                users.add(user);
-            }
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return users;
-
+        return List.of();
     }
 
     @Override
     public User getUserById(int id) throws DbConnectionException, SQLException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        User user = null;
-        try {
-            conn = DbConnector.getConnection();
-            String sql = "SELECT * FROM User WHERE user_id = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, id);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                user = new User();
-                user.setId(rs.getInt("user_id"));
-                user.setName(rs.getString("user_name"));
-                user.setSurname(rs.getString("user_surname"));
-            }
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
-        }
-        return user;
+        return null;
     }
 
     @Override
@@ -335,27 +284,6 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public void insertUse(Use use) throws DbConnectionException, SQLException {
-        Connection conn = DbConnector.getConnection();
-        User user = use.getUser();
-        Item item = use.getItem();
-        PreparedStatement stmt = null;
-        try {
-            stmt = conn.prepareStatement("INSERT INTO `Use` (use_id, user_id, item_id, use_date, use_time, battery) VALUES (?, ?, ?, ?, ?, ?)");
-            stmt.setInt(1, use.getId());
-            stmt.setInt(2, user.getId());
-            stmt.setInt(3, item.getId());
-            stmt.setDate(4, Date.valueOf(use.getUse_date()));
-            stmt.setTime(5, use.getUse_time());
-            stmt.setInt(6, use.getBattery());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
-
-        }
-
 
     }
 
@@ -383,19 +311,4 @@ public class DbFunctions implements IDbFunctions {
     public Use getUseById(int id) throws DbConnectionException, SQLException {
         return null;
     }
-    /*
-    public void insert(CustomerContract contract) {
-        Connection conn = getConnection();
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT customer (adi,soyadi) VALUES ('" + contract.getName() + "','" + contract.getSurname() + "')");
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-     */
-
-
 }

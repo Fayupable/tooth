@@ -4,7 +4,6 @@ import Db.DbConnector;
 import Db.DbFunctions;
 import Db.Exception.DbConnectionException;
 import Item.Enum.ItemType;
-import Ui.MainPage;
 import Item.Item;
 import User.User;
 import Item.Charge;
@@ -56,7 +55,8 @@ public class Test {
         Use use = new Use(user, item, LocalDate.now(), 10, 80);
 
 
-        dbFunctions.insertUse(use);
+
+//        dbFunctions.insertUse(use);
 
 
     }
