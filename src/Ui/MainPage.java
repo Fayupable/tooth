@@ -11,17 +11,18 @@ import Item.Item;
 import javax.swing.*;
 
 /**
- *
  * @author pc
  */
 public class MainPage extends javax.swing.JFrame {
     public DbFunctions dbFunctions;
+    public JTabbedPane tabbedPane;
 
     /**
      * Creates new form MainPage
      */
     public MainPage() {
         this.dbFunctions = new DbFunctions();
+        this.tabbedPane = new JTabbedPane();
         initComponents();
         initializeComboBox();
     }
@@ -79,6 +80,12 @@ public class MainPage extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        tbp_tooth.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tbp_toothStateChanged(evt);
+            }
+        });
+
         tbp_tooth.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tbp_toothMouseClicked(evt);
@@ -86,13 +93,13 @@ public class MainPage extends javax.swing.JFrame {
         });
 
         tbl_use.setModel(new javax.swing.table.DefaultTableModel(
-                new Object [][] {
+                new Object[][]{
                         {},
                         {},
                         {},
                         {}
                 },
-                new String [] {
+                new String[]{
 
                 }
         ));
@@ -119,13 +126,13 @@ public class MainPage extends javax.swing.JFrame {
         tbp_tooth.addTab("Use", pnl_use);
 
         tbl_charge.setModel(new javax.swing.table.DefaultTableModel(
-                new Object [][] {
+                new Object[][]{
                         {},
                         {},
                         {},
                         {}
                 },
-                new String [] {
+                new String[]{
 
                 }
         ));
@@ -152,13 +159,13 @@ public class MainPage extends javax.swing.JFrame {
         tbp_tooth.addTab("Charge", pnl_charge);
 
         tbl_item.setModel(new javax.swing.table.DefaultTableModel(
-                new Object [][] {
+                new Object[][]{
                         {},
                         {},
                         {},
                         {}
                 },
-                new String [] {
+                new String[]{
 
                 }
         ));
@@ -185,13 +192,13 @@ public class MainPage extends javax.swing.JFrame {
         tbp_tooth.addTab("Item", pnl_item);
 
         tbl_statistic.setModel(new javax.swing.table.DefaultTableModel(
-                new Object [][] {
+                new Object[][]{
                         {},
                         {},
                         {},
                         {}
                 },
-                new String [] {
+                new String[]{
 
                 }
         ));
@@ -218,13 +225,13 @@ public class MainPage extends javax.swing.JFrame {
         tbp_tooth.addTab("Statistic", pnl_statistic);
 
         tbl_tooth.setModel(new javax.swing.table.DefaultTableModel(
-                new Object [][] {
+                new Object[][]{
                         {},
                         {},
                         {},
                         {}
                 },
-                new String [] {
+                new String[]{
 
                 }
         ));
@@ -330,7 +337,7 @@ public class MainPage extends javax.swing.JFrame {
 
         lbl_item_type.setText("Item Type");
 
-        cmbx_item_type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbx_item_type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
 
         lbl_item_use_id.setText("Use Id");
 
@@ -477,17 +484,27 @@ public class MainPage extends javax.swing.JFrame {
         // TODO add your handling code here:
         String item_name = txtf_item_name.getText();
         String item_type_string = (String) cmbx_item_type.getSelectedItem();
+        int selectedIndex = tbp_tooth.getSelectedIndex();
 
-        Item item = new Item();
-        item.setName(item_name);
-        item.setType(ItemType.valueOf(item_type_string));
-
-        try {
-            dbFunctions.insertItem(item);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(selectedIndex != -1){
+            String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
+            if(tabTitle.equals("Item")){
+                Item item = new Item();
+                item.setName(item_name);
+                item.setType(ItemType.valueOf(item_type_string));
+                try {
+                    dbFunctions.insertItem(item);
+                    JOptionPane.showMessageDialog(null, "Item added successfully!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error adding item: " + e.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select the 'Item' tab to add an item.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a tab.");
         }
-
 
     }
 
@@ -530,6 +547,18 @@ public class MainPage extends javax.swing.JFrame {
     private void txtf_item_nameActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
     }
+
+    private void tbp_toothStateChanged(javax.swing.event.ChangeEvent evt) {
+        // TODO add your handling code here:
+        //check change
+        JTabbedPane tabbedPane = (JTabbedPane) evt.getSource();
+        int selectedIndex = tabbedPane.getSelectedIndex();
+        String tabTitle = tabbedPane.getTitleAt(selectedIndex);
+        System.out.println("Selected Index: " + selectedIndex + " Tab Title: " + tabTitle);
+
+
+    }
+
 
     /**
      * @param args the command line arguments
