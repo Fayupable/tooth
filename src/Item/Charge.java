@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class Charge extends Item{
     private User user;
+    private Item item;
     private LocalDate charge_date;
     private int charge_time;
     private int charge_id;
@@ -15,6 +16,12 @@ public class Charge extends Item{
     public Charge() {
     }
 
+    public Item getItem() {
+        return item;
+    }
+    public void setItem(Item item) {
+        this.item = item;
+    }
     public User getUser() {
         return user;
     }
@@ -51,6 +58,7 @@ public class Charge extends Item{
     public String toString() {
         return "Charge{" +
                 "user=" + user +
+                ", item=" + item +
                 ", charge_date=" + charge_date +
                 ", charge_time=" + charge_time +
                 ", charge_id=" + charge_id +
@@ -63,11 +71,11 @@ public class Charge extends Item{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Charge charge = (Charge) o;
-        return charge_time == charge.charge_time && charge_id == charge.charge_id && Objects.equals(user, charge.user) && Objects.equals(charge_date, charge.charge_date);
+        return charge_time == charge.charge_time && charge_id == charge.charge_id && Objects.equals(user, charge.user) && Objects.equals(item, charge.item) && Objects.equals(charge_date, charge.charge_date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), user, charge_date, charge_time, charge_id);
+        return Objects.hash(super.hashCode(), user, item, charge_date, charge_time, charge_id);
     }
 }

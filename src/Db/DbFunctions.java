@@ -13,6 +13,15 @@ import java.util.List;
 
 public class DbFunctions implements IDbFunctions {
 
+    private DbConnector dbConnector = new DbConnector();
+    private Connection conn;
+    private PreparedStatement pstmt;
+    private Statement stmt;
+    private ResultSet rs;
+    private User user;
+    private Item item;
+    private Charge charge;
+    private Use use;
 
     //charge_time , use_time
 //    private static final String insert_item_use = "INSERT ITEM use_time (item_user_name,item_user_id,item_id,item_name,item_battery,item_use_time,item_use_date,item_use_day_part,item_use_id) VALUES (?,?,?,?,?,?,?,?,?)";
@@ -26,7 +35,22 @@ public class DbFunctions implements IDbFunctions {
 //    private static final String delete_item_use = "DELETE FROM use_time WHERE item_use_id = ?";
 //    private static final String delete_item_charge = "DELETE FROM charge_time WHERE item_charge_id = ?";
 //    private static final String test = "INSERT INTO use_time (item_user_id) VALUES (?)"; // for testing
+    //Item
     private static final String insert_item = "INSERT INTO Item(item_name, item_type) VALUES (?,?)";
+    private static final String update_item = "UPDATE Item SET item_name = ?, item_type = ? WHERE item_id = ?";
+    private static final String delete_item = "DELETE FROM Item WHERE item_id = ?";
+    private static final String select_all_items = "SELECT * FROM Item";
+    private static final String search_item = "SELECT * FROM Item WHERE item_name LIKE ?";
+
+    //User
+    private static final String insert_user = "INSERT INTO User(user_name, user_surname) VALUES (?,?)";
+    private static final String update_user = "UPDATE User SET user_name = ?, user_surname = ? WHERE user_id = ?";
+    private static final String delete_user = "DELETE FROM User WHERE user_id = ?";
+    private static final String select_all_users = "SELECT * FROM User";
+    private static final String search_user = "SELECT * FROM User WHERE user_name LIKE ?";
+
+    //Charge
+    private static final String insert_charge = "INSERT INTO Charge(charge_id, user_id, item_id, charge_time,charge_date) VALUES (?,?,?,?,?)";
 
 
     // date regex ^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$
@@ -188,33 +212,73 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public void insertItem(Item item) throws DbConnectionException, SQLException {
-        Connection conn = DbConnector.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(insert_item);
-        stmt.setString(1, item.getName());
-        stmt.setString(2, String.valueOf(item.getType()));
-        stmt.executeUpdate();
-        stmt.close();
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(insert_item);
+        pstmt.setString(1, item.getName());
+        pstmt.setString(2, String.valueOf(item.getType()));
+        pstmt.executeUpdate();
+        pstmt.close();
         conn.close();
     }
 
     @Override
     public void updateItem(Item item) throws DbConnectionException, SQLException {
-
+        conn = dbConnector.getConnection();
+        pstmt = conn.prepareStatement(update_item);
+        pstmt.setString(1, item.getName());
+        pstmt.setString(2, String.valueOf(item.getType()));
+        pstmt.setInt(3, item.getId());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
     }
 
     @Override
     public void deleteItem(Item item) throws DbConnectionException, SQLException {
-
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(delete_item);
+        pstmt.setInt(1, item.getId());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
     }
 
     @Override
     public List<Item> getAllItems() throws DbConnectionException, SQLException {
-        return List.of();
+        List<Item> items = new ArrayList<>();
+        conn = DbConnector.getConnection();
+        stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(select_all_items);
+        while (rs.next()) {
+            Item item = new Item();
+            item.setId(rs.getInt("item_id"));
+            item.setName(rs.getString("item_name"));
+            item.setType(ItemType.valueOf(rs.getString("item_type")));
+            items.add(item);
+        }
+        stmt.close();
+        conn.close();
+        return items;
+
     }
 
     @Override
     public List<Item> searchItem(String search) throws DbConnectionException, SQLException {
-        return List.of();
+        List<Item> items = new ArrayList<>();
+        conn = DbConnector.getConnection();
+        stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(search_item);
+        while (rs.next()) {
+            Item item = new Item();
+            item.setId(rs.getInt("item_id"));
+            item.setName(rs.getString("item_name"));
+            item.setType(ItemType.valueOf(rs.getString("item_type")));
+            items.add(item);
+        }
+        stmt.close();
+        conn.close();
+        return items;
+
     }
 
     @Override
@@ -224,27 +288,71 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public void insertUser(User user) throws DbConnectionException, SQLException {
-
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(insert_user);
+        pstmt.setString(1, user.getName());
+        pstmt.setString(2, user.getSurname());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
     }
 
     @Override
     public void updateUser(User user) throws DbConnectionException, SQLException {
-
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(update_user);
+        pstmt.setString(1, user.getName());
+        pstmt.setString(2, user.getSurname());
+        pstmt.setInt(3, user.getId());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
     }
 
     @Override
     public void deleteUser(User user) throws DbConnectionException, SQLException {
-
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(delete_user);
+        pstmt.setInt(1, user.getId());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
     }
 
     @Override
     public List<User> getAllUsers() throws DbConnectionException, SQLException {
-        return List.of();
+        List<User> users = new ArrayList<>();
+        conn = DbConnector.getConnection();
+        stmt = conn.createStatement();
+        rs = stmt.executeQuery(select_all_users);
+        while (rs.next()) {
+            User user = new User();
+            user.setId(rs.getInt("user_id"));
+            user.setName(rs.getString("user_name"));
+            user.setSurname(rs.getString("user_surname"));
+            users.add(user);
+        }
+        stmt.close();
+        conn.close();
+        return users;
     }
 
     @Override
     public List<User> searchUser(String search) throws DbConnectionException, SQLException {
-        return List.of();
+        List<User> users = new ArrayList<>();
+        Connection conn = DbConnector.getConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(search_user);
+        while (rs.next()) {
+            User user = new User();
+            user.setId(rs.getInt("user_id"));
+            user.setName(rs.getString("user_name"));
+            user.setSurname(rs.getString("user_surname"));
+            users.add(user);
+        }
+        stmt.close();
+        conn.close();
+        return users;
     }
 
     @Override
@@ -254,7 +362,15 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public void insertCharge(Charge charge) throws DbConnectionException, SQLException {
-
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(insert_charge);
+        pstmt.setInt(1, user.getId());
+        pstmt.setInt(2, item.getId());
+        pstmt.setInt(3, charge.getCharge_time());
+        pstmt.setString(4, charge.getCharge_date().toString());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
     }
 
     @Override
@@ -311,4 +427,19 @@ public class DbFunctions implements IDbFunctions {
     public Use getUseById(int id) throws DbConnectionException, SQLException {
         return null;
     }
+
+    public void Login(String username) throws DbConnectionException, SQLException {
+        conn = DbConnector.getConnection();
+        stmt = conn.createStatement();
+        rs = stmt.executeQuery("SELECT * FROM User WHERE user_name = '" + username + "'");
+
+        if (rs.next()) {
+            System.out.println("Login successful");
+        } else {
+            System.out.println("Login failed");
+        }
+        stmt.close();
+        conn.close();
+    }
+
 }

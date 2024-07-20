@@ -5,10 +5,19 @@ package Ui;
  */
 
 import Db.DbFunctions;
+import Db.Exception.DbConnectionException;
 import Item.Enum.ItemType;
 import Item.Item;
+import User.User;
+import Item.Charge;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author pc
@@ -16,6 +25,11 @@ import javax.swing.*;
 public class MainPage extends javax.swing.JFrame {
     public DbFunctions dbFunctions;
     public JTabbedPane tabbedPane;
+    DefaultTableModel model;
+    public User user;
+    public Item item;
+    public Charge charge;
+
 
     /**
      * Creates new form MainPage
@@ -23,9 +37,127 @@ public class MainPage extends javax.swing.JFrame {
     public MainPage() {
         this.dbFunctions = new DbFunctions();
         this.tabbedPane = new JTabbedPane();
+        this.model = new DefaultTableModel();
+        this.user = new User();
+        this.item = new Item();
+        this.charge = new Charge();
+
         initComponents();
         initializeComboBox();
+//        disableSomeFields();
+        lbl_item_use_id.setText("Id");
+        lbl_item_use_date.setText("Date");
+        lbl_item_use_time.setText("Time");
+        txtf_item_use_date.setText(LocalDate.now().toString());
+
+//        try {
+//            List<User> users = dbFunctions.getAllUsers();
+//            for(User user: users){
+//                System.out.println(user);
+//            }
+//        } catch (DbConnectionException e) {
+//            throw new RuntimeException(e);
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+
+
     }
+
+    private void disableSomeFields() {
+        txtf_id.setEnabled(false);
+        txtf_item_id.setEnabled(false);
+        txtf_item_use_id.setEnabled(false);
+    }
+
+    public void loadItem() throws SQLException, DbConnectionException {
+        List<Item> items = dbFunctions.getAllItems();
+        for (Item item : items) {
+            model.addRow(new Object[]{item.getId(), item.getName(), item.getType()});
+        }
+
+    }
+
+    public void loadUser() throws SQLException, DbConnectionException {
+        List<User> users = dbFunctions.getAllUsers();
+        for (User user : users) {
+            model.addRow(new Object[]{user.getId(), user.getName(), user.getSurname()});
+        }
+    }
+
+    private void addItem() {
+        String item_name = txtf_item_name.getText();
+        String item_type_string = (String) cmbx_item_type.getSelectedItem();
+        int selectedIndex = tbp_tooth.getSelectedIndex();
+
+        if (selectedIndex != -1) {
+            String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
+            if (tabTitle.equals("Item")) {
+                Item item = new Item();
+                item.setName(item_name);
+                item.setType(ItemType.valueOf(item_type_string));
+                try {
+                    dbFunctions.insertItem(item);
+                    JOptionPane.showMessageDialog(null, "Item added successfully!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error adding item: " + e.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select the 'Item' tab to add an item.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a tab.");
+        }
+    }
+
+    private void addCharge() {
+        String item_use_id = txtf_item_use_id.getText();
+        String item_use_date = txtf_item_use_date.getText();
+        String item_use_time = txtf_item_use_time.getText();
+        int selectedIndex = tbp_tooth.getSelectedIndex();
+
+        if (selectedIndex != -1) {
+            String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
+            if (tabTitle.equals("Charge")) {
+                Charge charge = new Charge();
+                charge.setCharge_id(Integer.parseInt(item_use_id));
+                user = new User(); // user nesnesini başlatın
+                user.setId(Integer.parseInt(item_use_id)); // user nesnesini ayarlayın
+                item = new Item(); // item nesnesini başlatın
+                item.setId(Integer.parseInt(item_use_id)); // item nesnesini ayarlayın
+                charge.setCharge_date(LocalDate.parse(item_use_date));
+                charge.setCharge_time(Integer.parseInt(item_use_time));
+
+                charge.setUser(user); // Charge nesnesine user atayın
+                charge.setItem(item); // Charge nesnesine item atayın
+
+                try {
+                    dbFunctions.insertCharge(charge);
+                    JOptionPane.showMessageDialog(null, "Charge added successfully!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error adding charge: " + e.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select the 'Charge' tab to add a charge.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a tab.");
+        }
+    }
+    private void clearFields() {
+        txtf_id.setText("");
+        txtf_name.setText("");
+        txtf_item_id.setText("");
+        txtf_item_name.setText("");
+        cmbx_item_type.setSelectedIndex(0);
+        txtf_item_use_id.setText("");
+        txtf_item_use_date.setText("");
+        txtf_item_use_time.setText("");
+        txtf_item_battery.setText("");
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -482,25 +614,17 @@ public class MainPage extends javax.swing.JFrame {
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-        String item_name = txtf_item_name.getText();
-        String item_type_string = (String) cmbx_item_type.getSelectedItem();
         int selectedIndex = tbp_tooth.getSelectedIndex();
 
-        if(selectedIndex != -1){
+        if (selectedIndex != -1) {
             String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
-            if(tabTitle.equals("Item")){
-                Item item = new Item();
-                item.setName(item_name);
-                item.setType(ItemType.valueOf(item_type_string));
-                try {
-                    dbFunctions.insertItem(item);
-                    JOptionPane.showMessageDialog(null, "Item added successfully!");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Error adding item: " + e.getMessage());
-                }
+
+            if (tabTitle.equals("Item")) {
+                addItem();
+            } else if (tabTitle.equals("Charge")) {
+                addCharge();
             } else {
-                JOptionPane.showMessageDialog(null, "Please select the 'Item' tab to add an item.");
+                JOptionPane.showMessageDialog(null, "Please select the 'Item' or 'Charge' tab to add an entry.");
             }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a tab.");
@@ -510,6 +634,29 @@ public class MainPage extends javax.swing.JFrame {
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        int selectedIndex = tbp_tooth.getSelectedIndex();
+        if (selectedIndex != -1) {
+            String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
+            if (tabTitle.equals("Item")) {
+                int id = Integer.parseInt(txtf_item_id.getText());
+                String item_name = txtf_item_name.getText();
+                String item_type_string = (String) cmbx_item_type.getSelectedItem();
+                Item item = new Item(id, item_name, ItemType.valueOf(item_type_string));
+                try {
+                    dbFunctions.updateItem(item);
+                    JOptionPane.showMessageDialog(null, "Item updated successfully!");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error updating item: " + e.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select the 'Item' tab to update an item.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a tab.");
+        }
+
     }
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {
@@ -518,6 +665,15 @@ public class MainPage extends javax.swing.JFrame {
 
     private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        txtf_id.setText("");
+        txtf_name.setText("");
+        txtf_item_id.setText("");
+        txtf_item_name.setText("");
+        cmbx_item_type.setSelectedIndex(0);
+        txtf_item_use_id.setText("");
+        txtf_item_use_date.setText("");
+        txtf_item_use_time.setText("");
+        txtf_item_battery.setText("");
     }
 
     private void tbl_toothMouseClicked(java.awt.event.MouseEvent evt) {
@@ -530,10 +686,19 @@ public class MainPage extends javax.swing.JFrame {
 
     private void tbp_toothMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
+
     }
 
     private void tbl_chargeMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
+        clearFields();
+        int selectedIndex = tbl_charge.getSelectedRow();
+        if (selectedIndex != -1) {
+            txtf_item_use_id.setText(model.getValueAt(selectedIndex, 0).toString());
+            txtf_item_use_date.setText(model.getValueAt(selectedIndex, 1).toString());
+            txtf_item_use_time.setText(model.getValueAt(selectedIndex, 2).toString());
+
+        }
     }
 
     private void tbl_useMouseClicked(java.awt.event.MouseEvent evt) {
@@ -542,6 +707,13 @@ public class MainPage extends javax.swing.JFrame {
 
     private void tbl_itemMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
+        clearFields();
+        int selectedIndex = tbl_item.getSelectedRow();
+        if (selectedIndex != -1) {
+            txtf_item_id.setText(model.getValueAt(selectedIndex, 0).toString());
+            txtf_item_name.setText(model.getValueAt(selectedIndex, 1).toString());
+            cmbx_item_type.setSelectedItem(model.getValueAt(selectedIndex, 2).toString());
+        }
     }
 
     private void txtf_item_nameActionPerformed(java.awt.event.ActionEvent evt) {
@@ -555,6 +727,33 @@ public class MainPage extends javax.swing.JFrame {
         int selectedIndex = tabbedPane.getSelectedIndex();
         String tabTitle = tabbedPane.getTitleAt(selectedIndex);
         System.out.println("Selected Index: " + selectedIndex + " Tab Title: " + tabTitle);
+        if (tabTitle.equals("Item")) {
+            try {
+                List<Item> items = dbFunctions.getAllItems();
+                model = new DefaultTableModel();
+                model.setColumnIdentifiers(new Object[]{"Id", "Name", "Type"});
+                for (Item item : items) {
+                    model.addRow(new Object[]{item.getId(), item.getName(), item.getType()});
+                }
+                tbl_item.setModel(model);
+            } catch (DbConnectionException | SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error loading items: " + e.getMessage());
+            }
+        } else if (tabTitle.equals("Charge")) {
+            try {
+                List<Charge> charges = dbFunctions.getAllCharges();
+                model = new DefaultTableModel();
+                model.setColumnIdentifiers(new Object[]{"charge id", "user id", "item id", "charge time", "charge date"});
+                for (Charge charge : charges) {
+                    model.addRow(new Object[]{charge.getId(), user.getId(), item.getId(), charge.getCharge_time(), charge.getCharge_date()});
+                }
+                tbl_charge.setModel(model);
+            } catch (DbConnectionException | SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error loading charges: " + e.getMessage());
+            }
+        }
 
 
     }
