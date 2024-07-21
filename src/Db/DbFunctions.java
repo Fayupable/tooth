@@ -51,6 +51,10 @@ public class DbFunctions implements IDbFunctions {
 
     //Charge
     private static final String insert_charge = "INSERT INTO Charge(charge_id, user_id, item_id, charge_time,charge_date) VALUES (?,?,?,?,?)";
+    private static final String update_charge = "UPDATE Charge SET user_id = ?, item_id = ?, charge_time = ?, charge_date = ? WHERE charge_id = ?";
+    private static final String delete_charge = "DELETE FROM Charge WHERE charge_id = ?";
+    private static final String select_all_charges = "SELECT * FROM Charge";
+    private static final String search_charge = "SELECT * FROM Charge WHERE charge_time LIKE ?";
 
 
     // date regex ^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$
@@ -385,7 +389,22 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public List<Charge> getAllCharges() throws DbConnectionException, SQLException {
-        return List.of();
+        List<Charge> charges = new ArrayList<>();
+        conn = DbConnector.getConnection();
+        stmt = conn.createStatement();
+        rs = stmt.executeQuery(select_all_charges);
+        while (rs.next()) {
+            Charge charge = new Charge();
+            charge.setCharge_id(rs.getInt("charge_id"));
+            charge.setUser_id(rs.getInt("user_id"));
+            charge.setItem_id(rs.getInt("item_id"));
+            charge.setCharge_time(rs.getInt("charge_time"));
+            charge.setCharge_date(rs.getDate("charge_date").toLocalDate());
+            charges.add(charge);
+        }
+        stmt.close();
+        conn.close();
+        return charges;
     }
 
     @Override

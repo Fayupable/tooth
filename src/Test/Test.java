@@ -49,10 +49,8 @@ public class Test {
 //            System.out.println(item);
 //        }
 
-        User user = new User("John", "Doe");
 
-        Item item = new Item("Oral-B Toothbrush", ItemType.TOOTHBRUSHER);
-        Use use = new Use(user, item, LocalDate.now(), 10, 80);
+
 
 
 

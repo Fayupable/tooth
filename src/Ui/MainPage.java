@@ -121,17 +121,10 @@ public class MainPage extends javax.swing.JFrame {
             String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
             if (tabTitle.equals("Charge")) {
                 Charge charge = new Charge();
-                charge.setCharge_id(Integer.parseInt(item_use_id));
-                user = new User(); // user nesnesini başlatın
-                user.setId(Integer.parseInt(item_use_id)); // user nesnesini ayarlayın
-                item = new Item(); // item nesnesini başlatın
-                item.setId(Integer.parseInt(item_use_id)); // item nesnesini ayarlayın
+                charge.setUser_id(user.getId());
+                charge.setItem_id(item.getId());
                 charge.setCharge_date(LocalDate.parse(item_use_date));
                 charge.setCharge_time(Integer.parseInt(item_use_time));
-
-                charge.setUser(user); // Charge nesnesine user atayın
-                charge.setItem(item); // Charge nesnesine item atayın
-
                 try {
                     dbFunctions.insertCharge(charge);
                     JOptionPane.showMessageDialog(null, "Charge added successfully!");
@@ -142,9 +135,7 @@ public class MainPage extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "Please select the 'Charge' tab to add a charge.");
             }
-        } else {
-            JOptionPane.showMessageDialog(null, "Please select a tab.");
-        }
+            }
     }
     private void clearFields() {
         txtf_id.setText("");
@@ -691,14 +682,7 @@ public class MainPage extends javax.swing.JFrame {
 
     private void tbl_chargeMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
-        clearFields();
-        int selectedIndex = tbl_charge.getSelectedRow();
-        if (selectedIndex != -1) {
-            txtf_item_use_id.setText(model.getValueAt(selectedIndex, 0).toString());
-            txtf_item_use_date.setText(model.getValueAt(selectedIndex, 1).toString());
-            txtf_item_use_time.setText(model.getValueAt(selectedIndex, 2).toString());
 
-        }
     }
 
     private void tbl_useMouseClicked(java.awt.event.MouseEvent evt) {
@@ -721,8 +705,6 @@ public class MainPage extends javax.swing.JFrame {
     }
 
     private void tbp_toothStateChanged(javax.swing.event.ChangeEvent evt) {
-        // TODO add your handling code here:
-        //check change
         JTabbedPane tabbedPane = (JTabbedPane) evt.getSource();
         int selectedIndex = tabbedPane.getSelectedIndex();
         String tabTitle = tabbedPane.getTitleAt(selectedIndex);
@@ -746,7 +728,7 @@ public class MainPage extends javax.swing.JFrame {
                 model = new DefaultTableModel();
                 model.setColumnIdentifiers(new Object[]{"charge id", "user id", "item id", "charge time", "charge date"});
                 for (Charge charge : charges) {
-                    model.addRow(new Object[]{charge.getId(), user.getId(), item.getId(), charge.getCharge_time(), charge.getCharge_date()});
+                    model.addRow(new Object[]{charge.getCharge_id(), charge.getUser_id(), charge.getItem_id(), charge.getCharge_time(), charge.getCharge_date()});
                 }
                 tbl_charge.setModel(model);
             } catch (DbConnectionException | SQLException e) {
@@ -754,8 +736,6 @@ public class MainPage extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Error loading charges: " + e.getMessage());
             }
         }
-
-
     }
 
 

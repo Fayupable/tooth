@@ -7,8 +7,8 @@ import java.util.Objects;
 
 
 public class Charge extends Item{
-    private User user;
-    private Item item;
+    private int user_id;
+    private int item_id;
     private LocalDate charge_date;
     private int charge_time;
     private int charge_id;
@@ -16,18 +16,20 @@ public class Charge extends Item{
     public Charge() {
     }
 
-    public Item getItem() {
-        return item;
-    }
-    public void setItem(Item item) {
-        this.item = item;
-    }
-    public User getUser() {
-        return user;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
+    public int getItem_id() {
+        return item_id;
+    }
+
+    public void setItem_id(int item_id) {
+        this.item_id = item_id;
     }
 
     public LocalDate getCharge_date() {
@@ -57,8 +59,6 @@ public class Charge extends Item{
     @Override
     public String toString() {
         return "Charge{" +
-                "user=" + user +
-                ", item=" + item +
                 ", charge_date=" + charge_date +
                 ", charge_time=" + charge_time +
                 ", charge_id=" + charge_id +
@@ -71,11 +71,11 @@ public class Charge extends Item{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Charge charge = (Charge) o;
-        return charge_time == charge.charge_time && charge_id == charge.charge_id && Objects.equals(user, charge.user) && Objects.equals(item, charge.item) && Objects.equals(charge_date, charge.charge_date);
+        return charge_time == charge.charge_time && charge_id == charge.charge_id && Objects.equals(charge_date, charge.charge_date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), user, item, charge_date, charge_time, charge_id);
+        return Objects.hash(super.hashCode(), charge_date, charge_time, charge_id);
     }
 }

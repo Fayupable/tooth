@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Use extends Item {
-    private User user;
-    private Item item;
+    private int user_id;
+    private int item_id;
     private LocalDate use_date;
     private int use_time;
     private int battery;
@@ -17,29 +17,28 @@ public class Use extends Item {
 
     public Use() {
     }
-    public Use(User user, Item item, LocalDate use_date, int use_time, int battery) {
-        this.user = user;
-        this.item = item;
+    public Use(int user_id, int item_id, LocalDate use_date, int use_time, int battery) {
+        this.user_id = user_id;
+        this.item_id = item_id;
         this.use_date = use_date;
         this.use_time = use_time;
         this.battery = battery;
     }
 
-
-    public User getUser() {
-        return user;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
-    public Item getItem() {
-        return item;
+    public int getItem_id() {
+        return item_id;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setItem_id(int item_id) {
+        this.item_id = item_id;
     }
 
     public LocalDate getUse_date() {
@@ -81,7 +80,8 @@ public class Use extends Item {
     @Override
     public String toString() {
         return "Use{" +
-                "user=" + user +
+                "user_id=" + user_id +
+                ", item_id=" + item_id +
                 ", use_date=" + use_date +
                 ", use_time=" + use_time +
                 ", battery=" + battery +
@@ -95,11 +95,11 @@ public class Use extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Use use = (Use) o;
-        return use_time == use.use_time && battery == use.battery && use_id == use.use_id && Objects.equals(user, use.user) && Objects.equals(use_date, use.use_date);
+        return user_id == use.user_id && item_id == use.item_id && use_time == use.use_time && battery == use.battery && use_id == use.use_id && Objects.equals(use_date, use.use_date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), user, use_date, use_time, battery, use_id);
+        return Objects.hash(super.hashCode(), user_id, item_id, use_date, use_time, battery, use_id);
     }
 }
