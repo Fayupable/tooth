@@ -153,12 +153,26 @@ public class MainPage extends javax.swing.JFrame {
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Please select the 'Use' tab to add a use.");
-
             }
         }
-
     }
-    private void updateUse(){
+
+    private void updateItem() {
+        int id = Integer.parseInt(txtf_item_id.getText());
+        String item_name = txtf_item_name.getText();
+        String item_type_string = (String) cmbx_item_type.getSelectedItem();
+        Item item = new Item(id, item_name, ItemType.valueOf(item_type_string));
+        try {
+            dbFunctions.updateItem(item);
+            JOptionPane.showMessageDialog(null, "Item updated successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error updating item: " + e.getMessage());
+        }
+    }
+
+    private void updateUse() {
         String item_user_id = txtf_id.getText();
         String item_use_id = txtf_item_use_id.getText();
         String item_use_date = txtf_item_use_date.getText();
@@ -173,9 +187,11 @@ public class MainPage extends javax.swing.JFrame {
                 use.setUser_id(Integer.parseInt(item_user_id));
                 use.setItem_id(Integer.parseInt(item_use_id));
                 use.setUse_date(LocalDate.parse(item_use_date));
-                use.setUse_time(Integer.parseInt(item_use_time));
+                use.setUse_time(Integer.parseInt(item_use_time)); // use_time as int
                 use.setBattery(Integer.parseInt(item_battery));
+                use.setUse_id(Integer.parseInt(item_use_id)); // Ensure use_id is set for the update
                 try {
+                    System.out.println("Updating Use: " + use.toString()); // Debugging information
                     dbFunctions.updateUse(use);
                     JOptionPane.showMessageDialog(null, "Use updated successfully!");
                 } catch (Exception e) {
@@ -184,7 +200,6 @@ public class MainPage extends javax.swing.JFrame {
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Please select the 'Use' tab to update a use.");
-
             }
         }
     }
@@ -689,18 +704,11 @@ public class MainPage extends javax.swing.JFrame {
         if (selectedIndex != -1) {
             String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
             if (tabTitle.equals("Item")) {
-                int id = Integer.parseInt(txtf_item_id.getText());
-                String item_name = txtf_item_name.getText();
-                String item_type_string = (String) cmbx_item_type.getSelectedItem();
-                Item item = new Item(id, item_name, ItemType.valueOf(item_type_string));
-                try {
-                    dbFunctions.updateItem(item);
-                    JOptionPane.showMessageDialog(null, "Item updated successfully!");
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Error updating item: " + e.getMessage());
-                }
+                updateItem();
+            } else if (tabTitle.equals("Charge")) {
+                JOptionPane.showMessageDialog(null, "Please select the 'Use' tab to update a charge.");
+            } else if (tabTitle.equals("Use")) {
+                updateUse();
             } else {
                 JOptionPane.showMessageDialog(null, "Please select the 'Item' tab to update an item.");
             }

@@ -59,7 +59,7 @@ public class DbFunctions implements IDbFunctions {
 
     //Use
     private static final String insert_use = "INSERT INTO `Use`(user_id, item_id, use_date,use_time,battery) VALUES (?,?,?,?,?)";
-    private static final String update_use = "UPDATE Use SET user_id = ?, item_id = ?, use_date = ?, use_time = ?, battery = ? WHERE use_id = ?";
+    private static final String update_use = "UPDATE `Use` SET user_id = ?, item_id = ?, use_date = ?, use_time = ?, battery = ? WHERE use_id = ?";
     private static final String delete_use = "DELETE FROM `Use` WHERE use_id = ?";
     private static final String select_all_uses = "SELECT * FROM `Use`";
     private static final String search_use = "SELECT * FROM `Use` WHERE use_time LIKE ?";
