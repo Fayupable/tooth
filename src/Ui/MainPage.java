@@ -10,6 +10,7 @@ import Item.Enum.ItemType;
 import Item.Item;
 import User.User;
 import Item.Charge;
+import Item.Use;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -44,10 +45,10 @@ public class MainPage extends javax.swing.JFrame {
 
         initComponents();
         initializeComboBox();
-//        disableSomeFields();
-        lbl_item_use_id.setText("Id");
-        lbl_item_use_date.setText("Date");
-        lbl_item_use_time.setText("Time");
+        disableSomeFields();
+        lbl_item_use_id.setText("Use Id");
+        lbl_item_use_date.setText("Use Date");
+        lbl_item_use_time.setText("Use Time");
         txtf_item_use_date.setText(LocalDate.now().toString());
 
 //        try {
@@ -68,21 +69,6 @@ public class MainPage extends javax.swing.JFrame {
         txtf_id.setEnabled(false);
         txtf_item_id.setEnabled(false);
         txtf_item_use_id.setEnabled(false);
-    }
-
-    public void loadItem() throws SQLException, DbConnectionException {
-        List<Item> items = dbFunctions.getAllItems();
-        for (Item item : items) {
-            model.addRow(new Object[]{item.getId(), item.getName(), item.getType()});
-        }
-
-    }
-
-    public void loadUser() throws SQLException, DbConnectionException {
-        List<User> users = dbFunctions.getAllUsers();
-        for (User user : users) {
-            model.addRow(new Object[]{user.getId(), user.getName(), user.getSurname()});
-        }
     }
 
     private void addItem() {
@@ -147,6 +133,11 @@ public class MainPage extends javax.swing.JFrame {
         txtf_item_use_date.setText("");
         txtf_item_use_time.setText("");
         txtf_item_battery.setText("");
+    }
+    private void clearLbl(){
+        lbl_item_use_id.setText("Id");
+        lbl_item_use_date.setText("Date");
+        lbl_item_use_time.setText("Time");
     }
 
 
@@ -682,16 +673,36 @@ public class MainPage extends javax.swing.JFrame {
 
     private void tbl_chargeMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
+        int selectedIndex = tbl_charge.getSelectedRow();
+        if(selectedIndex != -1){
+            txtf_item_use_id.setText(model.getValueAt(selectedIndex, 0).toString());
+            txtf_id.setText(model.getValueAt(selectedIndex, 1).toString());
+            txtf_item_id.setText(model.getValueAt(selectedIndex, 2).toString());
+            txtf_item_use_time.setText(model.getValueAt(selectedIndex, 3).toString());
+            txtf_item_use_date.setText(model.getValueAt(selectedIndex, 4).toString());
+
+        }
+
+
 
     }
 
     private void tbl_useMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
+        int selectedIndex = tbl_use.getSelectedRow();
+        if(selectedIndex != -1){
+            txtf_item_use_id.setText(model.getValueAt(selectedIndex, 0).toString());
+            txtf_id.setText(model.getValueAt(selectedIndex, 1).toString());
+            txtf_item_id.setText(model.getValueAt(selectedIndex, 2).toString());
+            txtf_item_use_time.setText(model.getValueAt(selectedIndex, 3).toString());
+            txtf_item_use_date.setText(model.getValueAt(selectedIndex, 4).toString());
+            txtf_item_battery.setText(model.getValueAt(selectedIndex, 5).toString());
+
+        }
     }
 
     private void tbl_itemMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
-        clearFields();
         int selectedIndex = tbl_item.getSelectedRow();
         if (selectedIndex != -1) {
             txtf_item_id.setText(model.getValueAt(selectedIndex, 0).toString());
@@ -711,6 +722,8 @@ public class MainPage extends javax.swing.JFrame {
         System.out.println("Selected Index: " + selectedIndex + " Tab Title: " + tabTitle);
         if (tabTitle.equals("Item")) {
             try {
+                clearFields();
+                clearLbl();
                 List<Item> items = dbFunctions.getAllItems();
                 model = new DefaultTableModel();
                 model.setColumnIdentifiers(new Object[]{"Id", "Name", "Type"});
@@ -724,6 +737,10 @@ public class MainPage extends javax.swing.JFrame {
             }
         } else if (tabTitle.equals("Charge")) {
             try {
+                clearFields();
+                lbl_item_use_id.setText("Charge Id");
+                lbl_item_use_date.setText("Charge Date");
+                lbl_item_use_time.setText("Charge Time");
                 List<Charge> charges = dbFunctions.getAllCharges();
                 model = new DefaultTableModel();
                 model.setColumnIdentifiers(new Object[]{"charge id", "user id", "item id", "charge time", "charge date"});
@@ -735,7 +752,26 @@ public class MainPage extends javax.swing.JFrame {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error loading charges: " + e.getMessage());
             }
+        } else if (tabTitle.equals("Use")) {
+            try {
+                List<Use> uses = dbFunctions.getAllUses();
+                model = new DefaultTableModel();
+                model.setColumnIdentifiers(new Object[]{"use id", "user id", "item id", "use date", "use time","battery"});
+                lbl_item_use_id.setText("Use Id");
+                lbl_item_use_date.setText("Use Date");
+                lbl_item_use_time.setText("Use Time");
+                for (Use use : uses) {
+                    model.addRow(new Object[]{use.getUse_id(), use.getUser_id(), use.getItem_id(), use.getUse_date(), use.getUse_time(),use.getBattery()});
+                }
+                tbl_use.setModel(model);
+            } catch (DbConnectionException | SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error loading uses: " + e.getMessage());
+            }
+
         }
+
+
     }
 
 

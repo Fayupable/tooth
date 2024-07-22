@@ -23,6 +23,7 @@ public class DbFunctions implements IDbFunctions {
     private Charge charge;
     private Use use;
 
+    private static final String loginQuery = "SELECT * FROM User WHERE user_name = ?";
     //charge_time , use_time
 //    private static final String insert_item_use = "INSERT ITEM use_time (item_user_name,item_user_id,item_id,item_name,item_battery,item_use_time,item_use_date,item_use_day_part,item_use_id) VALUES (?,?,?,?,?,?,?,?,?)";
 //    private static final String insert_item_charge = "INSERT ITEM charge_time (item_user_name,item_user_id,item_id,item_name,item_charge_date,item_charge_time) VALUES (?,?,?,?,?,?)";
@@ -55,6 +56,16 @@ public class DbFunctions implements IDbFunctions {
     private static final String delete_charge = "DELETE FROM Charge WHERE charge_id = ?";
     private static final String select_all_charges = "SELECT * FROM Charge";
     private static final String search_charge = "SELECT * FROM Charge WHERE charge_time LIKE ?";
+
+    //Use
+    private static final String insert_use = "INSERT INTO Use(user_id, item_id, use_date,use_time,battery) VALUES (?,?,?,?,?)";
+    private static final String update_use = "UPDATE Use SET user_id = ?, item_id = ?, use_date = ?, use_time = ?, battery = ? WHERE use_id = ?";
+    private static final String delete_use = "DELETE FROM Use WHERE use_id = ?";
+    private static final String select_all_uses = "SELECT * FROM `Use`";
+    private static final String search_use = "SELECT * FROM Use WHERE use_time LIKE ?";
+
+
+
 
 
     // date regex ^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$
@@ -434,7 +445,22 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public List<Use> getAllUses() throws DbConnectionException, SQLException {
-        return List.of();
+        List<Use> uses = new ArrayList<>();
+        conn = DbConnector.getConnection();
+        stmt = conn.createStatement();
+        rs = stmt.executeQuery(select_all_uses);
+        while (rs.next()) {
+            Use use = new Use();
+            use.setUse_id(rs.getInt("use_id"));
+            use.setUser_id(rs.getInt("user_id"));
+            use.setItem_id(rs.getInt("item_id"));
+            use.setUse_date(rs.getDate("use_date").toLocalDate());
+            use.setUse_time(rs.getInt("use_time"));
+            use.setBattery(rs.getInt("battery"));
+            uses.add(use);
+        }
+        return uses;
+
     }
 
     @Override
@@ -450,7 +476,7 @@ public class DbFunctions implements IDbFunctions {
     public void Login(String username) throws DbConnectionException, SQLException {
         conn = DbConnector.getConnection();
         stmt = conn.createStatement();
-        rs = stmt.executeQuery("SELECT * FROM User WHERE user_name = '" + username + "'");
+        rs = stmt.executeQuery(loginQuery);
 
         if (rs.next()) {
             System.out.println("Login successful");
