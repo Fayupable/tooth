@@ -58,14 +58,11 @@ public class DbFunctions implements IDbFunctions {
     private static final String search_charge = "SELECT * FROM Charge WHERE charge_time LIKE ?";
 
     //Use
-    private static final String insert_use = "INSERT INTO Use(user_id, item_id, use_date,use_time,battery) VALUES (?,?,?,?,?)";
+    private static final String insert_use = "INSERT INTO `Use`(user_id, item_id, use_date,use_time,battery) VALUES (?,?,?,?,?)";
     private static final String update_use = "UPDATE Use SET user_id = ?, item_id = ?, use_date = ?, use_time = ?, battery = ? WHERE use_id = ?";
-    private static final String delete_use = "DELETE FROM Use WHERE use_id = ?";
+    private static final String delete_use = "DELETE FROM `Use` WHERE use_id = ?";
     private static final String select_all_uses = "SELECT * FROM `Use`";
-    private static final String search_use = "SELECT * FROM Use WHERE use_time LIKE ?";
-
-
-
+    private static final String search_use = "SELECT * FROM `Use` WHERE use_time LIKE ?";
 
 
     // date regex ^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$
@@ -430,12 +427,31 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public void insertUse(Use use) throws DbConnectionException, SQLException {
-
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(insert_use);
+        pstmt.setInt(1, use.getUser_id());
+        pstmt.setInt(2, use.getItem_id());
+        pstmt.setDate(3, Date.valueOf(use.getUse_date()));
+        pstmt.setInt(4, use.getUse_time());
+        pstmt.setInt(5, use.getBattery());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
     }
 
     @Override
     public void updateUse(Use use) throws DbConnectionException, SQLException {
-
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(update_use);
+        pstmt.setInt(1, use.getUser_id());
+        pstmt.setInt(2, use.getItem_id());
+        pstmt.setDate(3, Date.valueOf(use.getUse_date()));
+        pstmt.setInt(4, use.getUse_time());
+        pstmt.setInt(5, use.getBattery());
+        pstmt.setInt(6, use.getUse_id());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
     }
 
     @Override
@@ -454,8 +470,8 @@ public class DbFunctions implements IDbFunctions {
             use.setUse_id(rs.getInt("use_id"));
             use.setUser_id(rs.getInt("user_id"));
             use.setItem_id(rs.getInt("item_id"));
-            use.setUse_date(rs.getDate("use_date").toLocalDate());
             use.setUse_time(rs.getInt("use_time"));
+            use.setUse_date(rs.getDate("use_date").toLocalDate());
             use.setBattery(rs.getInt("battery"));
             uses.add(use);
         }

@@ -1,7 +1,5 @@
 package Item;
 
-import User.User;
-
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -24,6 +22,7 @@ public class Use extends Item {
         this.use_time = use_time;
         this.battery = battery;
     }
+
 
     public int getUser_id() {
         return user_id;
@@ -49,12 +48,10 @@ public class Use extends Item {
         this.use_date = use_date;
     }
 
-    public Time getUse_time() {
-        int hour = Integer.parseInt(String.valueOf(use_time));
-        if (hour < 0 || hour >= 24) {
-            throw new IllegalArgumentException("Hour must be between 0 and 23.");
-        }
-        return Time.valueOf(hour + ":00:00");
+    public int getUse_time() {
+        return use_time;
+
+
     }
 
     public void setUse_time(int use_time) {

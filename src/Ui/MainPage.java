@@ -17,6 +17,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,8 +124,71 @@ public class MainPage extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "Please select the 'Charge' tab to add a charge.");
             }
-            }
+        }
     }
+
+    private void addUse() {
+        String item_user_id = txtf_id.getText();
+        String item_use_id = txtf_item_use_id.getText();
+        String item_use_date = txtf_item_use_date.getText();
+        String item_use_time = txtf_item_use_time.getText();
+        String item_battery = txtf_item_battery.getText();
+        int selectedIndex = tbp_tooth.getSelectedIndex();
+
+        if (selectedIndex != -1) {
+            String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
+            if (tabTitle.equals("Use")) {
+                Use use = new Use();
+                use.setUser_id(Integer.parseInt(item_user_id));
+                use.setItem_id(Integer.parseInt(item_use_id));
+                use.setUse_date(LocalDate.parse(item_use_date));
+                use.setUse_time(Integer.parseInt(item_use_time));
+                use.setBattery(Integer.parseInt(item_battery));
+                try {
+                    dbFunctions.insertUse(use);
+                    JOptionPane.showMessageDialog(null, "Use added successfully!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error adding use: " + e.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select the 'Use' tab to add a use.");
+
+            }
+        }
+
+    }
+    private void updateUse(){
+        String item_user_id = txtf_id.getText();
+        String item_use_id = txtf_item_use_id.getText();
+        String item_use_date = txtf_item_use_date.getText();
+        String item_use_time = txtf_item_use_time.getText();
+        String item_battery = txtf_item_battery.getText();
+        int selectedIndex = tbp_tooth.getSelectedIndex();
+
+        if (selectedIndex != -1) {
+            String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
+            if (tabTitle.equals("Use")) {
+                Use use = new Use();
+                use.setUser_id(Integer.parseInt(item_user_id));
+                use.setItem_id(Integer.parseInt(item_use_id));
+                use.setUse_date(LocalDate.parse(item_use_date));
+                use.setUse_time(Integer.parseInt(item_use_time));
+                use.setBattery(Integer.parseInt(item_battery));
+                try {
+                    dbFunctions.updateUse(use);
+                    JOptionPane.showMessageDialog(null, "Use updated successfully!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error updating use: " + e.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select the 'Use' tab to update a use.");
+
+            }
+        }
+    }
+
     private void clearFields() {
         txtf_id.setText("");
         txtf_name.setText("");
@@ -134,7 +200,8 @@ public class MainPage extends javax.swing.JFrame {
         txtf_item_use_time.setText("");
         txtf_item_battery.setText("");
     }
-    private void clearLbl(){
+
+    private void clearLbl() {
         lbl_item_use_id.setText("Id");
         lbl_item_use_date.setText("Date");
         lbl_item_use_time.setText("Time");
@@ -605,6 +672,8 @@ public class MainPage extends javax.swing.JFrame {
                 addItem();
             } else if (tabTitle.equals("Charge")) {
                 addCharge();
+            } else if (tabTitle.equals("Use")) {
+                addUse();
             } else {
                 JOptionPane.showMessageDialog(null, "Please select the 'Item' or 'Charge' tab to add an entry.");
             }
@@ -674,7 +743,7 @@ public class MainPage extends javax.swing.JFrame {
     private void tbl_chargeMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
         int selectedIndex = tbl_charge.getSelectedRow();
-        if(selectedIndex != -1){
+        if (selectedIndex != -1) {
             txtf_item_use_id.setText(model.getValueAt(selectedIndex, 0).toString());
             txtf_id.setText(model.getValueAt(selectedIndex, 1).toString());
             txtf_item_id.setText(model.getValueAt(selectedIndex, 2).toString());
@@ -684,18 +753,17 @@ public class MainPage extends javax.swing.JFrame {
         }
 
 
-
     }
 
     private void tbl_useMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
         int selectedIndex = tbl_use.getSelectedRow();
-        if(selectedIndex != -1){
+        if (selectedIndex != -1) {
             txtf_item_use_id.setText(model.getValueAt(selectedIndex, 0).toString());
             txtf_id.setText(model.getValueAt(selectedIndex, 1).toString());
             txtf_item_id.setText(model.getValueAt(selectedIndex, 2).toString());
-            txtf_item_use_time.setText(model.getValueAt(selectedIndex, 3).toString());
-            txtf_item_use_date.setText(model.getValueAt(selectedIndex, 4).toString());
+            txtf_item_use_date.setText(model.getValueAt(selectedIndex, 3).toString());
+            txtf_item_use_time.setText(model.getValueAt(selectedIndex, 4).toString());
             txtf_item_battery.setText(model.getValueAt(selectedIndex, 5).toString());
 
         }
@@ -756,12 +824,12 @@ public class MainPage extends javax.swing.JFrame {
             try {
                 List<Use> uses = dbFunctions.getAllUses();
                 model = new DefaultTableModel();
-                model.setColumnIdentifiers(new Object[]{"use id", "user id", "item id", "use date", "use time","battery"});
+                model.setColumnIdentifiers(new Object[]{"use id", "user id", "item id", "use date", "use time", "battery"});
                 lbl_item_use_id.setText("Use Id");
                 lbl_item_use_date.setText("Use Date");
                 lbl_item_use_time.setText("Use Time");
                 for (Use use : uses) {
-                    model.addRow(new Object[]{use.getUse_id(), use.getUser_id(), use.getItem_id(), use.getUse_date(), use.getUse_time(),use.getBattery()});
+                    model.addRow(new Object[]{use.getUse_id(), use.getUser_id(), use.getItem_id(), use.getUse_date(), use.getUse_time(), use.getBattery()});
                 }
                 tbl_use.setModel(model);
             } catch (DbConnectionException | SQLException e) {
