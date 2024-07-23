@@ -55,6 +55,8 @@ public class DbFunctions implements IDbFunctions {
     private static final String delete_use = "DELETE FROM `Use` WHERE use_id = ?";
     private static final String select_all_uses = "SELECT * FROM `Use`";
     private static final String search_use = "SELECT * FROM `Use` WHERE use_time LIKE ?";
+    private static final String select_use_by_id = "SELECT * FROM `Use` WHERE user_id = ?";
+
 
 
     // date regex ^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$
@@ -527,11 +529,32 @@ public class DbFunctions implements IDbFunctions {
         return List.of();
     }
 
+
     @Override
     public Use getUseById(int id) throws DbConnectionException, SQLException {
         return null;
     }
 
+    @Override
+    public List<Use> getUseById1(int id) throws DbConnectionException, SQLException {
+        List<Use> uses = new ArrayList<>();
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(select_use_by_id);
+        pstmt.setInt(1, id);
+        rs = pstmt.executeQuery();
+        while (rs.next()) {
+            Use use = new Use();
+            use.setUse_id(rs.getInt("use_id"));
+            use.setUser_id(rs.getInt("user_id"));
+            use.setItem_id(rs.getInt("item_id"));
+            use.setUse_time(rs.getInt("use_time"));
+            use.setUse_date(rs.getDate("use_date").toLocalDate());
+            use.setBattery(rs.getInt("battery"));
+            uses.add(use);
+        }
+        return uses;
+
+    }
 
     @Override
     public List<Charge> getChargeById(int id) throws DbConnectionException, SQLException {

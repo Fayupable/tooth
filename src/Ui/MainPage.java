@@ -933,8 +933,23 @@ public class MainPage extends javax.swing.JFrame {
             }
 
         } else if (tabTitle.equals("Use")) {
+//            try {
+//                List<Use> uses = dbFunctions.getAllUses();
+//                model = new DefaultTableModel();
+//                model.setColumnIdentifiers(new Object[]{"use id", "user id", "item id", "use date", "use time", "battery"});
+//                lbl_item_use_id.setText("Use Id");
+//                lbl_item_use_date.setText("Use Date");
+//                lbl_item_use_time.setText("Use Time");
+//                for (Use use : uses) {
+//                    model.addRow(new Object[]{use.getUse_id(), use.getUser_id(), use.getItem_id(), use.getUse_date(), use.getUse_time(), use.getBattery()});
+//                }
+//                tbl_use.setModel(model);
+//            } catch (DbConnectionException | SQLException e) {
+//                e.printStackTrace();
+//                JOptionPane.showMessageDialog(null, "Error loading uses: " + e.getMessage());
+//
             try {
-                List<Use> uses = dbFunctions.getAllUses();
+                List<Use> uses = dbFunctions.getUseById1(loggedInUser.getId());
                 model = new DefaultTableModel();
                 model.setColumnIdentifiers(new Object[]{"use id", "user id", "item id", "use date", "use time", "battery"});
                 lbl_item_use_id.setText("Use Id");
@@ -944,16 +959,17 @@ public class MainPage extends javax.swing.JFrame {
                     model.addRow(new Object[]{use.getUse_id(), use.getUser_id(), use.getItem_id(), use.getUse_date(), use.getUse_time(), use.getBattery()});
                 }
                 tbl_use.setModel(model);
-            } catch (DbConnectionException | SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error loading uses: " + e.getMessage());
+
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } catch (DbConnectionException e) {
+                throw new RuntimeException(e);
             }
 
+
         }
-
-
     }
-
 
     /**
      * @param args the command line arguments

@@ -43,6 +43,7 @@ public interface IDbFunctions {
     List<Use> getAllUses() throws DbConnectionException, SQLException;
     List<Use> searchUse(String search) throws DbConnectionException, SQLException;
     Use getUseById(int id) throws DbConnectionException, SQLException;
+    List<Use>getUseById1(int id) throws DbConnectionException, SQLException;
 
 
 //    void insertItem(Common common) throws DbConnectionException, SQLException;
