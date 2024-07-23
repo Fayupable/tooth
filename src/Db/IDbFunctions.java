@@ -33,7 +33,7 @@ public interface IDbFunctions {
     void deleteCharge(Charge charge) throws DbConnectionException, SQLException;
     List<Charge> getAllCharges() throws DbConnectionException, SQLException;
     List<Charge> searchCharge(String search) throws DbConnectionException, SQLException;
-    Charge getChargeById(int id) throws DbConnectionException, SQLException;
+    Charge getChargeById(User user,int id) throws DbConnectionException, SQLException;
 
     void insertUse(Use use) throws DbConnectionException, SQLException;
     void updateUse(Use use) throws DbConnectionException, SQLException;

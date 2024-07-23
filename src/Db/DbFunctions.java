@@ -24,18 +24,7 @@ public class DbFunctions implements IDbFunctions {
     private Use use;
 
     private static final String loginQuery = "SELECT * FROM User WHERE user_name = ?";
-    //charge_time , use_time
-//    private static final String insert_item_use = "INSERT ITEM use_time (item_user_name,item_user_id,item_id,item_name,item_battery,item_use_time,item_use_date,item_use_day_part,item_use_id) VALUES (?,?,?,?,?,?,?,?,?)";
-//    private static final String insert_item_charge = "INSERT ITEM charge_time (item_user_name,item_user_id,item_id,item_name,item_charge_date,item_charge_time) VALUES (?,?,?,?,?,?)";
-//    private static final String select_item_use_by_id = "SELECT * FROM use_time WHERE item_use_id = ?";
-//    private static final String select_item_charge_by_id = "SELECT * FROM charge_time WHERE item_charge_id = ?";
-//    private static final String select_all_item_use = "SELECT * FROM use_time";
-//    private static final String select_all_item_charge = "SELECT * FROM charge_time";
-//    private static final String update_item_use = "UPDATE use_time SET item_user_name = ?, item_user_id = ?, item_id = ?, item_name = ?, item_battery = ?, item_use_time = ?, item_use_date = ?, item_use_day_part = ? WHERE item_use_id = ?";
-//    private static final String update_item_charge = "UPDATE charge_time SET item_user_name = ?, item_user_id = ?, item_id = ?, item_name = ?, item_charge_date = ?, item_charge_time = ? WHERE item_charge_id = ?";
-//    private static final String delete_item_use = "DELETE FROM use_time WHERE item_use_id = ?";
-//    private static final String delete_item_charge = "DELETE FROM charge_time WHERE item_charge_id = ?";
-//    private static final String test = "INSERT INTO use_time (item_user_id) VALUES (?)"; // for testing
+
     //Item
     private static final String insert_item = "INSERT INTO Item(item_name, item_type) VALUES (?,?)";
     private static final String update_item = "UPDATE Item SET item_name = ?, item_type = ? WHERE item_id = ?";
@@ -51,11 +40,12 @@ public class DbFunctions implements IDbFunctions {
     private static final String search_user = "SELECT * FROM User WHERE user_name LIKE ?";
 
     //Charge
-    private static final String insert_charge = "INSERT INTO Charge(charge_id, user_id, item_id, charge_time,charge_date) VALUES (?,?,?,?,?)";
+    private static final String insert_charge = "INSERT INTO Charge(user_id, item_id, charge_time,charge_date) VALUES (?,?,?,?)";
     private static final String update_charge = "UPDATE Charge SET user_id = ?, item_id = ?, charge_time = ?, charge_date = ? WHERE charge_id = ?";
     private static final String delete_charge = "DELETE FROM Charge WHERE charge_id = ?";
     private static final String select_all_charges = "SELECT * FROM Charge";
     private static final String search_charge = "SELECT * FROM Charge WHERE charge_time LIKE ?";
+    private static final String select_charge_by_id = "SELECT * FROM Charge WHERE charge_id = ? AND user_id = ?";
 
     //Use
     private static final String insert_use = "INSERT INTO `Use`(user_id, item_id, use_date,use_time,battery) VALUES (?,?,?,?,?)";
@@ -376,8 +366,8 @@ public class DbFunctions implements IDbFunctions {
     public void insertCharge(Charge charge) throws DbConnectionException, SQLException {
         conn = DbConnector.getConnection();
         pstmt = conn.prepareStatement(insert_charge);
-        pstmt.setInt(1, user.getId());
-        pstmt.setInt(2, item.getId());
+        pstmt.setInt(1, charge.getUser_id());
+        pstmt.setInt(2, charge.getItem_id());
         pstmt.setInt(3, charge.getCharge_time());
         pstmt.setString(4, charge.getCharge_date().toString());
         pstmt.executeUpdate();
@@ -387,11 +377,27 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public void updateCharge(Charge charge) throws DbConnectionException, SQLException {
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(update_charge);
+        pstmt.setInt(1, charge.getUser_id());
+        pstmt.setInt(2, charge.getItem_id());
+        pstmt.setInt(3, charge.getCharge_time());
+        pstmt.setString(4, charge.getCharge_date().toString());
+        pstmt.setInt(5, charge.getCharge_id());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
 
     }
 
     @Override
     public void deleteCharge(Charge charge) throws DbConnectionException, SQLException {
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(delete_charge);
+        pstmt.setInt(1, charge.getCharge_id());
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
 
     }
 
@@ -417,14 +423,49 @@ public class DbFunctions implements IDbFunctions {
 
     @Override
     public List<Charge> searchCharge(String search) throws DbConnectionException, SQLException {
-        return List.of();
+        List<Charge> charges = new ArrayList<>();
+        conn = DbConnector.getConnection();
+        stmt = conn.createStatement();
+        rs = stmt.executeQuery(search_charge);
+        while (rs.next()) {
+            Charge charge = new Charge();
+            charge.setCharge_id(rs.getInt("charge_id"));
+            charge.setUser_id(rs.getInt("user_id"));
+            charge.setItem_id(rs.getInt("item_id"));
+            charge.setCharge_time(rs.getInt("charge_time"));
+            charge.setCharge_date(rs.getDate("charge_date").toLocalDate());
+            charges.add(charge);
+        }
+        stmt.close();
+        conn.close();
+        return charges;
     }
 
-    @Override
-    public Charge getChargeById(int id) throws DbConnectionException, SQLException {
-        return null;
-    }
+    public Charge getChargeById(User user, int chargeId) throws DbConnectionException, SQLException {
+        Charge charge = null;
 
+        try (Connection conn = DbConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(select_charge_by_id)) {
+
+            pstmt.setInt(1, chargeId);
+            pstmt.setInt(2, user.getId());
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    charge = new Charge();
+                    charge.setCharge_id(rs.getInt("charge_id"));
+                    charge.setUser_id(rs.getInt("user_id"));
+                    charge.setItem_id(rs.getInt("item_id"));
+                    charge.setCharge_time(rs.getInt("charge_time"));
+                    charge.setCharge_date(rs.getDate("charge_date").toLocalDate());
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Database query error: " + e.getMessage());
+        }
+
+        return charge;
+    }
     @Override
     public void insertUse(Use use) throws DbConnectionException, SQLException {
         conn = DbConnector.getConnection();
@@ -489,18 +530,50 @@ public class DbFunctions implements IDbFunctions {
         return null;
     }
 
-    public void Login(String username) throws DbConnectionException, SQLException {
-        conn = DbConnector.getConnection();
-        stmt = conn.createStatement();
-        rs = stmt.executeQuery(loginQuery);
 
-        if (rs.next()) {
-            System.out.println("Login successful");
-        } else {
-            System.out.println("Login failed");
+    public boolean Login(String username) throws DbConnectionException, SQLException {
+        boolean loginSuccessful = false;
+
+        try (Connection conn = DbConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(loginQuery)) {
+
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    System.out.println("Login successful");
+                    loginSuccessful = true;
+                } else {
+                    System.out.println("Login failed");
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Database query error: " + e.getMessage());
         }
-        stmt.close();
-        conn.close();
+
+        return loginSuccessful;
     }
 
+
+    public User getUser(String username) throws DbConnectionException, SQLException {
+        User user = null;
+
+        try (Connection conn = DbConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(loginQuery)) {
+
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    user = new User();
+                    user.setId(rs.getInt("id"));
+                    user.setName(rs.getString("name"));
+                    user.setSurname(rs.getString("surname"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Database query error: " + e.getMessage());
+        }
+
+        return user;
+    }
 }
+

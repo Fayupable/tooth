@@ -14,13 +14,9 @@ import Item.Use;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +29,7 @@ public class MainPage extends javax.swing.JFrame {
     public User user;
     public Item item;
     public Charge charge;
+    public User loggedInUser;
 
 
     /**
@@ -45,6 +42,7 @@ public class MainPage extends javax.swing.JFrame {
         this.user = new User();
         this.item = new Item();
         this.charge = new Charge();
+        this.loggedInUser = user;
 
         initComponents();
         initializeComboBox();
@@ -67,6 +65,10 @@ public class MainPage extends javax.swing.JFrame {
 
 
     }
+    private User getLoggedInUser() {
+        return this.loggedInUser;
+    }
+
 
     private void disableSomeFields() {
         txtf_id.setEnabled(false);
@@ -100,23 +102,55 @@ public class MainPage extends javax.swing.JFrame {
         }
     }
 
+    private void updateItem() {
+        int id = Integer.parseInt(txtf_item_id.getText());
+        String item_name = txtf_item_name.getText();
+        String item_type_string = (String) cmbx_item_type.getSelectedItem();
+        Item item = new Item(id, item_name, ItemType.valueOf(item_type_string));
+        try {
+            dbFunctions.updateItem(item);
+            JOptionPane.showMessageDialog(null, "Item updated successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error updating item: " + e.getMessage());
+        }
+    }
+
+
     private void addCharge() {
-        String item_use_id = txtf_item_use_id.getText();
-        String item_use_date = txtf_item_use_date.getText();
-        String item_use_time = txtf_item_use_time.getText();
+
+        String item_User_Id = txtf_id.getText();
+        String item_Id = txtf_item_id.getText();
+        String charge_Date = txtf_item_use_date.getText();
+        String charge_Time = txtf_item_use_time.getText();
+        String charge_Id = txtf_item_use_id.getText();
+
         int selectedIndex = tbp_tooth.getSelectedIndex();
 
         if (selectedIndex != -1) {
             String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
             if (tabTitle.equals("Charge")) {
-                Charge charge = new Charge();
-                charge.setUser_id(user.getId());
-                charge.setItem_id(item.getId());
-                charge.setCharge_date(LocalDate.parse(item_use_date));
-                charge.setCharge_time(Integer.parseInt(item_use_time));
                 try {
+                    int userId = Integer.parseInt(item_User_Id);
+                    int itemId = Integer.parseInt(item_Id);
+                    LocalDate chargeDate = LocalDate.parse(charge_Date);
+                    int chargeTime = Integer.parseInt(charge_Time);
+                    int chargeId = Integer.parseInt(charge_Id);  // Parse charge ID
+
+                    Charge charge = new Charge();
+                    charge.setUser_id(userId);
+                    charge.setItem_id(itemId);
+                    charge.setCharge_date(chargeDate);
+                    charge.setCharge_time(chargeTime);
+                    charge.setCharge_id(chargeId);  // Set charge ID
+
                     dbFunctions.insertCharge(charge);
                     JOptionPane.showMessageDialog(null, "Charge added successfully!");
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid number: " + e.getMessage());
+                } catch (DateTimeParseException e) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid date format (YYYY-MM-DD): " + e.getMessage());
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Error adding charge: " + e.getMessage());
@@ -124,6 +158,54 @@ public class MainPage extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "Please select the 'Charge' tab to add a charge.");
             }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a tab.");
+        }
+
+    }
+
+
+    private void updateCharge() {
+        String item_User_Id = txtf_id.getText();
+        String item_Id = txtf_item_id.getText();
+        String charge_Date = txtf_item_use_date.getText();
+        String charge_Time = txtf_item_use_time.getText();
+        String charge_Id = txtf_item_use_id.getText();
+
+        int selectedIndex = tbp_tooth.getSelectedIndex();
+
+        if (selectedIndex != -1) {
+            String tabTitle = tbp_tooth.getTitleAt(selectedIndex);
+            if (tabTitle.equals("Charge")) {
+                try {
+                    int userId = Integer.parseInt(item_User_Id);
+                    int itemId = Integer.parseInt(item_Id);
+                    LocalDate chargeDate = LocalDate.parse(charge_Date);
+                    int chargeTime = Integer.parseInt(charge_Time);
+                    int chargeId = Integer.parseInt(charge_Id);  // Parse charge ID
+
+                    Charge charge = new Charge();
+                    charge.setUser_id(userId);
+                    charge.setItem_id(itemId);
+                    charge.setCharge_date(chargeDate);
+                    charge.setCharge_time(chargeTime);
+                    charge.setCharge_id(chargeId);  // Set charge ID
+
+                    dbFunctions.updateCharge(charge);
+                    JOptionPane.showMessageDialog(null, "Charge updated successfully!");
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid number: " + e.getMessage());
+                } catch (DateTimeParseException e) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid date format (YYYY-MM-DD): " + e.getMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error updating charge: " + e.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select the 'Charge' tab to update a charge.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a tab.");
         }
     }
 
@@ -154,21 +236,6 @@ public class MainPage extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "Please select the 'Use' tab to add a use.");
             }
-        }
-    }
-
-    private void updateItem() {
-        int id = Integer.parseInt(txtf_item_id.getText());
-        String item_name = txtf_item_name.getText();
-        String item_type_string = (String) cmbx_item_type.getSelectedItem();
-        Item item = new Item(id, item_name, ItemType.valueOf(item_type_string));
-        try {
-            dbFunctions.updateItem(item);
-            JOptionPane.showMessageDialog(null, "Item updated successfully!");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error updating item: " + e.getMessage());
         }
     }
 
@@ -203,6 +270,7 @@ public class MainPage extends javax.swing.JFrame {
             }
         }
     }
+
 
     private void clearFields() {
         txtf_id.setText("");
@@ -695,7 +763,6 @@ public class MainPage extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Please select a tab.");
         }
-
     }
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {
@@ -706,7 +773,7 @@ public class MainPage extends javax.swing.JFrame {
             if (tabTitle.equals("Item")) {
                 updateItem();
             } else if (tabTitle.equals("Charge")) {
-                JOptionPane.showMessageDialog(null, "Please select the 'Use' tab to update a charge.");
+                updateCharge();
             } else if (tabTitle.equals("Use")) {
                 updateUse();
             } else {
@@ -812,22 +879,7 @@ public class MainPage extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Error loading items: " + e.getMessage());
             }
         } else if (tabTitle.equals("Charge")) {
-            try {
-                clearFields();
-                lbl_item_use_id.setText("Charge Id");
-                lbl_item_use_date.setText("Charge Date");
-                lbl_item_use_time.setText("Charge Time");
-                List<Charge> charges = dbFunctions.getAllCharges();
-                model = new DefaultTableModel();
-                model.setColumnIdentifiers(new Object[]{"charge id", "user id", "item id", "charge time", "charge date"});
-                for (Charge charge : charges) {
-                    model.addRow(new Object[]{charge.getCharge_id(), charge.getUser_id(), charge.getItem_id(), charge.getCharge_time(), charge.getCharge_date()});
-                }
-                tbl_charge.setModel(model);
-            } catch (DbConnectionException | SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error loading charges: " + e.getMessage());
-            }
+
         } else if (tabTitle.equals("Use")) {
             try {
                 List<Use> uses = dbFunctions.getAllUses();
