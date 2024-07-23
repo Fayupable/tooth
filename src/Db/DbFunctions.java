@@ -24,6 +24,8 @@ public class DbFunctions implements IDbFunctions {
     private Use use;
 
     private static final String loginQuery = "SELECT * FROM User WHERE user_name = ?";
+    private static final String GET_USER_QUERY = "SELECT * FROM User WHERE user_name = ?";
+
 
     //Item
     private static final String insert_item = "INSERT INTO Item(item_name, item_type) VALUES (?,?)";
@@ -558,15 +560,15 @@ public class DbFunctions implements IDbFunctions {
         User user = null;
 
         try (Connection conn = DbConnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(loginQuery)) {
+             PreparedStatement pstmt = conn.prepareStatement(GET_USER_QUERY)) {
 
             pstmt.setString(1, username);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     user = new User();
-                    user.setId(rs.getInt("id"));
-                    user.setName(rs.getString("name"));
-                    user.setSurname(rs.getString("surname"));
+                    user.setId(rs.getInt("user_id"));
+                    user.setName(rs.getString("user_name"));
+                    user.setSurname(rs.getString("user_surname"));
                 }
             }
         } catch (SQLException e) {

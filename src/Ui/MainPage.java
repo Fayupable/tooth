@@ -35,6 +35,7 @@ public class MainPage extends javax.swing.JFrame {
     /**
      * Creates new form MainPage
      */
+
     public MainPage() {
         this.dbFunctions = new DbFunctions();
         this.tabbedPane = new JTabbedPane();
@@ -63,8 +64,25 @@ public class MainPage extends javax.swing.JFrame {
 //            throw new RuntimeException(e);
 //        }
 
-
     }
+    public MainPage(User user) {
+        this.dbFunctions = new DbFunctions();
+        this.tabbedPane = new JTabbedPane();
+        this.model = new DefaultTableModel();
+        this.user = new User();
+        this.item = new Item();
+        this.charge = new Charge();
+        this.loggedInUser = user;
+
+        initComponents();
+        initializeComboBox();
+        disableSomeFields();
+        lbl_item_use_id.setText("Use Id");
+        lbl_item_use_date.setText("Use Date");
+        lbl_item_use_time.setText("Use Time");
+        txtf_item_use_date.setText(LocalDate.now().toString());
+    }
+
     private User getLoggedInUser() {
         return this.loggedInUser;
     }
@@ -879,6 +897,23 @@ public class MainPage extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Error loading items: " + e.getMessage());
             }
         } else if (tabTitle.equals("Charge")) {
+            try {
+                clearFields();
+                clearLbl();
+                int testChargeId = 1;
+                Charge charge = dbFunctions.getChargeById(loggedInUser, testChargeId);
+                if (charge != null) {
+                    model = new DefaultTableModel();
+                    model.setColumnIdentifiers(new Object[]{"Charge ID", "User ID", "Item ID", "Charge Time", "Charge Date"});
+                    model.addRow(new Object[]{charge.getCharge_id(), charge.getUser_id(), charge.getItem_id(), charge.getCharge_time(), charge.getCharge_date()});
+                    tbl_charge.setModel(model);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No charge found for the given charge ID and user.");
+                }
+            } catch (DbConnectionException | SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error loading charge: " + e.getMessage());
+            }
 
         } else if (tabTitle.equals("Use")) {
             try {
