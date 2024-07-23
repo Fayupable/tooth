@@ -73,6 +73,8 @@ public class MainPage extends javax.swing.JFrame {
         this.item = new Item();
         this.charge = new Charge();
         this.loggedInUser = user;
+        int id=user.getId();
+        String user_name=user.getName();
 
         initComponents();
         initializeComboBox();
@@ -897,22 +899,37 @@ public class MainPage extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Error loading items: " + e.getMessage());
             }
         } else if (tabTitle.equals("Charge")) {
+//            try {
+//                List<Charge> charges = dbFunctions.getAllCharges();
+//                model = new DefaultTableModel();
+//                model.setColumnIdentifiers(new Object[]{"charge id", "user id", "item id", "charge date", "charge time"});
+//                lbl_item_use_id.setText("Charge Id");
+//                lbl_item_use_date.setText("Charge Date");
+//                lbl_item_use_time.setText("Charge Time");
+//                for (Charge charge : charges) {
+//                    model.addRow(new Object[]{charge.getCharge_id(), charge.getUser_id(), charge.getItem_id(), charge.getCharge_date(), charge.getCharge_time()});
+//                }
+//                tbl_charge.setModel(model);
+//            } catch (DbConnectionException | SQLException e) {
+//                e.printStackTrace();
+//                JOptionPane.showMessageDialog(null, "Error loading charges: " + e.getMessage());
+//            }
             try {
-                clearFields();
-                clearLbl();
-                int testChargeId = 1;
-                Charge charge = dbFunctions.getChargeById(loggedInUser, testChargeId);
-                if (charge != null) {
-                    model = new DefaultTableModel();
-                    model.setColumnIdentifiers(new Object[]{"Charge ID", "User ID", "Item ID", "Charge Time", "Charge Date"});
-                    model.addRow(new Object[]{charge.getCharge_id(), charge.getUser_id(), charge.getItem_id(), charge.getCharge_time(), charge.getCharge_date()});
-                    tbl_charge.setModel(model);
-                } else {
-                    JOptionPane.showMessageDialog(null, "No charge found for the given charge ID and user.");
+                List<Charge> charges = dbFunctions.getChargeById(loggedInUser.getId());
+                model = new DefaultTableModel();
+                model.setColumnIdentifiers(new Object[]{"charge id", "user id", "item id", "charge date", "charge time"});
+                lbl_item_use_id.setText("Charge Id");
+                lbl_item_use_date.setText("Charge Date");
+                lbl_item_use_time.setText("Charge Time");
+                for (Charge charge : charges) {
+                    model.addRow(new Object[]{charge.getCharge_id(), charge.getUser_id(), charge.getItem_id(), charge.getCharge_date(), charge.getCharge_time()});
                 }
-            } catch (DbConnectionException | SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error loading charge: " + e.getMessage());
+                tbl_charge.setModel(model);
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } catch (DbConnectionException e) {
+                throw new RuntimeException(e);
             }
 
         } else if (tabTitle.equals("Use")) {

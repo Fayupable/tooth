@@ -47,7 +47,7 @@ public class DbFunctions implements IDbFunctions {
     private static final String delete_charge = "DELETE FROM Charge WHERE charge_id = ?";
     private static final String select_all_charges = "SELECT * FROM Charge";
     private static final String search_charge = "SELECT * FROM Charge WHERE charge_time LIKE ?";
-    private static final String select_charge_by_id = "SELECT * FROM Charge WHERE charge_id = ? AND user_id = ?";
+    private static final String select_charge_by_id = "SELECT * FROM Charge WHERE user_id = ?";
 
     //Use
     private static final String insert_use = "INSERT INTO `Use`(user_id, item_id, use_date,use_time,battery) VALUES (?,?,?,?,?)";
@@ -443,30 +443,30 @@ public class DbFunctions implements IDbFunctions {
         return charges;
     }
 
-    public Charge getChargeById(User user, int chargeId) throws DbConnectionException, SQLException {
-        Charge charge = null;
+    public Charge getChargesByUserId(User user) throws DbConnectionException, SQLException {
+        List<Charge> charges = new ArrayList<>();
 
         try (Connection conn = DbConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(select_charge_by_id)) {
 
-            pstmt.setInt(1, chargeId);
-            pstmt.setInt(2, user.getId());
+            pstmt.setInt(1, user.getId());
 
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    charge = new Charge();
+                while (rs.next()) {
+                    Charge charge = new Charge();
                     charge.setCharge_id(rs.getInt("charge_id"));
                     charge.setUser_id(rs.getInt("user_id"));
                     charge.setItem_id(rs.getInt("item_id"));
                     charge.setCharge_time(rs.getInt("charge_time"));
                     charge.setCharge_date(rs.getDate("charge_date").toLocalDate());
+                    charges.add(charge);
                 }
             }
         } catch (SQLException e) {
             throw new SQLException("Database query error: " + e.getMessage());
         }
+        return charges.get(0);
 
-        return charge;
     }
     @Override
     public void insertUse(Use use) throws DbConnectionException, SQLException {
@@ -532,6 +532,25 @@ public class DbFunctions implements IDbFunctions {
         return null;
     }
 
+
+    @Override
+    public List<Charge> getChargeById(int id) throws DbConnectionException, SQLException {
+        List<Charge> charges = new ArrayList<>();
+        conn = DbConnector.getConnection();
+        pstmt = conn.prepareStatement(select_charge_by_id);
+        pstmt.setInt(1, id);
+        rs = pstmt.executeQuery();
+        while (rs.next()) {
+            Charge charge = new Charge();
+            charge.setCharge_id(rs.getInt("charge_id"));
+            charge.setUser_id(rs.getInt("user_id"));
+            charge.setItem_id(rs.getInt("item_id"));
+            charge.setCharge_time(rs.getInt("charge_time"));
+            charge.setCharge_date(rs.getDate("charge_date").toLocalDate());
+            charges.add(charge);
+        }
+        return charges;
+    }
 
     public boolean Login(String username) throws DbConnectionException, SQLException {
         boolean loginSuccessful = false;

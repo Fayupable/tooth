@@ -27,13 +27,15 @@ public interface IDbFunctions {
     List<User> getAllUsers() throws DbConnectionException, SQLException;
     List<User> searchUser(String search) throws DbConnectionException, SQLException;
     User getUserById(int id) throws DbConnectionException, SQLException;
+//    List<User> getUserById1(int id) throws DbConnectionException, SQLException;
 
     void insertCharge(Charge charge) throws DbConnectionException, SQLException;
     void updateCharge(Charge charge) throws DbConnectionException, SQLException;
     void deleteCharge(Charge charge) throws DbConnectionException, SQLException;
     List<Charge> getAllCharges() throws DbConnectionException, SQLException;
     List<Charge> searchCharge(String search) throws DbConnectionException, SQLException;
-    Charge getChargeById(User user,int id) throws DbConnectionException, SQLException;
+    List<Charge> getChargeById(int id) throws DbConnectionException, SQLException;
+
 
     void insertUse(Use use) throws DbConnectionException, SQLException;
     void updateUse(Use use) throws DbConnectionException, SQLException;

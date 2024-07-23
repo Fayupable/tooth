@@ -85,14 +85,10 @@ public class LoginPage extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Login successful");
                 this.loggedInUser = userLogin.getUser(txtf_user_name.getText());
                 new MainPage(loggedInUser).setVisible(true);
-//                new MainPage().setVisible(true);
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Login failed");
             }
-
-
-
         }
     }
 
