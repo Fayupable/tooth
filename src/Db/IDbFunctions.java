@@ -15,11 +15,14 @@ public interface IDbFunctions {
 
 
     void insertItem(Item item) throws DbConnectionException, SQLException;
+    void addItemToUserInventory(int userId, int itemId, int quantity) throws DbConnectionException, SQLException;
     void updateItem(Item item) throws DbConnectionException, SQLException;
     void deleteItem(Item item) throws DbConnectionException, SQLException;
     List<Item> getAllItems() throws DbConnectionException, SQLException;
     List<Item> searchItem(String search) throws DbConnectionException, SQLException;
     Item getItemById(int id) throws DbConnectionException, SQLException;
+    List<Item> getItemsByUserInventory(int userId) throws DbConnectionException, SQLException;
+
 
     void insertUser(User user) throws DbConnectionException, SQLException;
     void updateUser(User user) throws DbConnectionException, SQLException;

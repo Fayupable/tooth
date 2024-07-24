@@ -5,7 +5,9 @@ public enum ItemType {
     TOOTHWASHER("Toothwasher"),
     DENTALFLOSS("Dental Floss"),
     TOOTHPASTE("Toothpaste"),
-    MOUTHWASH("Mouthwash");
+    MOUTHWASH("Mouthwash"),
+    TONGUECLEANER("Tongue Cleaner");
+
 
     private final String description;
 

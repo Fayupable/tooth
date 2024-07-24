@@ -33,6 +33,16 @@ public class DbFunctions implements IDbFunctions {
     private static final String delete_item = "DELETE FROM Item WHERE item_id = ?";
     private static final String select_all_items = "SELECT * FROM Item";
     private static final String search_item = "SELECT * FROM Item WHERE item_name LIKE ?";
+    private static final String select_item_by_id = "SELECT * FROM User_Inventory WHERE item_id = ?";
+    private static final String select_items_by_user_inventory =
+            "SELECT i.item_id, i.item_name, i.item_type " +
+                    "FROM User_Inventory ui " +
+                    "JOIN Item i ON ui.item_id = i.item_id " +
+                    "WHERE ui.user_id = ?";
+
+    //user_inventory
+    private static final String insert_user_inventory = "INSERT INTO User_Inventory(user_id, item_id, quantity) VALUES (?, ?, ?)";
+
 
     //User
     private static final String insert_user = "INSERT INTO User(user_name, user_surname) VALUES (?,?)";
@@ -56,7 +66,6 @@ public class DbFunctions implements IDbFunctions {
     private static final String select_all_uses = "SELECT * FROM `Use`";
     private static final String search_use = "SELECT * FROM `Use` WHERE use_time LIKE ?";
     private static final String select_use_by_id = "SELECT * FROM `Use` WHERE user_id = ?";
-
 
 
     // date regex ^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$
@@ -217,6 +226,17 @@ public class DbFunctions implements IDbFunctions {
 
 
     @Override
+    public void addItemToUserInventory(int userId, int itemId, int quantity) throws SQLException, DbConnectionException {
+        try (Connection conn = DbConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(insert_user_inventory)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, itemId);
+            pstmt.setInt(3, quantity);
+            pstmt.executeUpdate();
+        }
+    }
+
+    @Override
     public void insertItem(Item item) throws DbConnectionException, SQLException {
         conn = DbConnector.getConnection();
         pstmt = conn.prepareStatement(insert_item);
@@ -285,6 +305,26 @@ public class DbFunctions implements IDbFunctions {
         conn.close();
         return items;
 
+    }
+
+
+    public List<Item> getItemsByUserInventory(int userId) throws DbConnectionException, SQLException {
+        List<Item> items = new ArrayList<>();
+        try (Connection conn = DbConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(select_items_by_user_inventory)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Item item = new Item();
+                item.setId(rs.getInt("item_id"));
+                item.setName(rs.getString("item_name"));
+                item.setType(ItemType.valueOf(rs.getString("item_type")));
+                items.add(item);
+            }
+        }
+        return items;
     }
 
     @Override
@@ -470,6 +510,7 @@ public class DbFunctions implements IDbFunctions {
         return charges.get(0);
 
     }
+
     @Override
     public void insertUse(Use use) throws DbConnectionException, SQLException {
         conn = DbConnector.getConnection();
